@@ -23,52 +23,52 @@ export default function HowItWorksPage() {
     {
       number: 1,
       icon: Coins,
-      title: t('landing.howItWorks.step1.title'),
-      description: t('landing.howItWorks.step1.description'),
+      title: t('howItWorks.step1.title'),
+      description: t('howItWorks.step1.description'),
       details: [
-        'Purchase shares using LUSD token',
-        'Each share costs 1 LUSD',
-        'No limit on number of shares per user',
-        'Shares are recorded on-chain',
+        t('howItWorks.step1.detail1'),
+        t('howItWorks.step1.detail2'),
+        t('howItWorks.step1.detail3'),
+        t('howItWorks.step1.detail4'),
       ],
       color: 'amber',
     },
     {
       number: 2,
       icon: Shuffle,
-      title: t('landing.howItWorks.step2.title'),
-      description: t('landing.howItWorks.step2.description'),
+      title: t('howItWorks.step2.title'),
+      description: t('howItWorks.step2.description'),
       details: [
-        'Triggered when token cap is reached',
-        'Chainlink VRF provides random seed',
-        'Fair selection of 8 participants',
-        'Completely transparent and verifiable',
+        t('howItWorks.step2.detail1'),
+        t('howItWorks.step2.detail2'),
+        t('howItWorks.step2.detail3'),
+        t('howItWorks.step2.detail4'),
       ],
       color: 'purple',
     },
     {
       number: 3,
       icon: Users,
-      title: t('landing.howItWorks.step3.title'),
-      description: t('landing.howItWorks.step3.description'),
+      title: t('howItWorks.step3.title'),
+      description: t('howItWorks.step3.description'),
       details: [
-        '8 → 4 → 2 participant rounds',
-        '24-hour voting period each round',
-        'Vote to continue or stop the game',
-        'Majority decides the outcome',
+        t('howItWorks.step3.detail1'),
+        t('howItWorks.step3.detail2'),
+        t('howItWorks.step3.detail3'),
+        t('howItWorks.step3.detail4'),
       ],
       color: 'blue',
     },
     {
       number: 4,
       icon: Trophy,
-      title: t('landing.howItWorks.step4.title'),
-      description: t('landing.howItWorks.step4.description'),
+      title: t('howItWorks.step4.title'),
+      description: t('howItWorks.step4.description'),
       details: [
-        'Final winner receives 85% of prize pool',
-        'Consolation prizes for runners-up (5%)',
-        'Automatic prize distribution',
-        'Withdraw to any address',
+        t('howItWorks.step4.detail1'),
+        t('howItWorks.step4.detail2'),
+        t('howItWorks.step4.detail3'),
+        t('howItWorks.step4.detail4'),
       ],
       color: 'green',
     },
@@ -77,61 +77,61 @@ export default function HowItWorksPage() {
   const features = [
     {
       icon: Shield,
-      title: 'Fully Decentralized',
-      description: 'No central authority controls the game. Smart contract handles everything.',
+      title: t('howItWorks.features.decentralized.title'),
+      description: t('howItWorks.features.decentralized.description'),
     },
     {
       icon: Zap,
-      title: 'Chainlink VRF',
-      description: 'Verifiable Random Function ensures provably fair random selection.',
+      title: t('howItWorks.features.vrf.title'),
+      description: t('howItWorks.features.vrf.description'),
     },
     {
       icon: Clock,
-      title: '24-Hour Voting',
-      description: 'Each voting round lasts 24 hours, giving everyone time to participate.',
+      title: t('howItWorks.features.voting.title'),
+      description: t('howItWorks.features.voting.description'),
     },
     {
       icon: CheckCircle,
-      title: 'On-Chain Transparency',
-      description: 'All transactions and results are recorded on the blockchain.',
+      title: t('howItWorks.features.transparent.title'),
+      description: t('howItWorks.features.transparent.description'),
     },
   ]
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Header */}
-      <div className="text-center mb-16">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          {t('landing.howItWorks.title')}
+      <div className="text-center mb-8 md:mb-16">
+        <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          {t('howItWorks.title')}
         </h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-          A step-by-step guide to participating in the Participation Game
+        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+          {t('howItWorks.subtitle')}
         </p>
       </div>
 
       {/* Steps */}
-      <div className="max-w-4xl mx-auto space-y-8 mb-16">
+      <div className="max-w-4xl mx-auto space-y-6 mb-12 md:mb-16">
         {steps.map((step, index) => (
-          <Card key={index} className="overflow-hidden">
+          <Card key={index} className="glass-card overflow-hidden">
             <div className="flex flex-col md:flex-row">
               {/* Step Number */}
-              <div className={`p-8 flex items-center justify-center bg-${step.color}-500/10 md:w-48`}>
-                <div className={`w-20 h-20 rounded-full bg-gradient-to-br from-${step.color}-500 to-${step.color}-600 flex items-center justify-center shadow-lg`}>
-                  <span className="text-3xl font-bold text-white">{step.number}</span>
+              <div className="p-6 md:p-8 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 md:w-40">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
+                  <span className="text-2xl md:text-3xl font-bold text-white">{step.number}</span>
                 </div>
               </div>
 
               {/* Content */}
-              <CardContent className="flex-1 p-8">
-                <div className="flex items-center gap-3 mb-4">
-                  <step.icon className={`h-6 w-6 text-${step.color}-500`} />
-                  <h3 className="text-2xl font-bold text-white">{step.title}</h3>
+              <CardContent className="flex-1 p-6 md:p-8">
+                <div className="flex items-center gap-3 mb-3">
+                  <step.icon className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
+                  <h3 className="text-xl md:text-2xl font-bold text-white">{step.title}</h3>
                 </div>
-                <p className="text-slate-400 mb-4">{step.description}</p>
+                <p className="text-slate-400 mb-4 text-sm md:text-base">{step.description}</p>
                 <ul className="space-y-2">
                   {step.details.map((detail, i) => (
-                    <li key={i} className="flex items-center gap-2 text-slate-300">
-                      <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                    <li key={i} className="flex items-start gap-2 text-slate-300 text-sm md:text-base">
+                      <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
                       {detail}
                     </li>
                   ))}
@@ -143,20 +143,20 @@ export default function HowItWorksPage() {
       </div>
 
       {/* Features Grid */}
-      <div className="max-w-4xl mx-auto mb-16">
-        <h2 className="text-2xl font-bold text-center text-white mb-8">
-          Key Features
+      <div className="max-w-4xl mx-auto mb-12 md:mb-16">
+        <h2 className="text-xl md:text-2xl font-bold text-center text-white mb-6 md:mb-8">
+          {t('howItWorks.featuresTitle')}
         </h2>
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {features.map((feature, index) => (
-            <Card key={index} className="p-6">
+            <Card key={index} className="glass-card p-4 md:p-6">
               <div className="flex items-start gap-4">
-                <div className="p-3 rounded-lg bg-amber-500/10">
-                  <feature.icon className="h-6 w-6 text-amber-500" />
+                <div className="p-2 md:p-3 rounded-lg bg-amber-500/10 flex-shrink-0">
+                  <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
-                  <p className="text-slate-400 text-sm">{feature.description}</p>
+                  <h3 className="font-semibold text-white mb-1 text-sm md:text-base">{feature.title}</h3>
+                  <p className="text-slate-400 text-xs md:text-sm">{feature.description}</p>
                 </div>
               </div>
             </Card>
@@ -165,27 +165,27 @@ export default function HowItWorksPage() {
       </div>
 
       {/* Prize Distribution */}
-      <div className="max-w-4xl mx-auto mb-16">
-        <Card className="p-8">
-          <h2 className="text-2xl font-bold text-center text-white mb-8">
-            Prize Distribution
+      <div className="max-w-4xl mx-auto mb-12 md:mb-16">
+        <Card className="glass-card p-6 md:p-8">
+          <h2 className="text-xl md:text-2xl font-bold text-center text-white mb-6 md:mb-8">
+            {t('howItWorks.prizeDistribution')}
           </h2>
-          <div className="grid md:grid-cols-4 gap-4 text-center">
-            <div className="p-4 rounded-xl bg-slate-700/30">
-              <div className="text-3xl font-bold text-red-500 mb-1">10%</div>
-              <p className="text-slate-400 text-sm">Platform Fee</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-center">
+            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
+              <div className="text-2xl md:text-3xl font-bold text-red-500 mb-1">10%</div>
+              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.platformFee')}</p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-700/30">
-              <div className="text-3xl font-bold text-amber-500 mb-1">90%</div>
-              <p className="text-slate-400 text-sm">Prize Pool</p>
+            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
+              <div className="text-2xl md:text-3xl font-bold text-amber-500 mb-1">90%</div>
+              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.prizePool')}</p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-700/30">
-              <div className="text-3xl font-bold text-green-500 mb-1">85%</div>
-              <p className="text-slate-400 text-sm">Final Winner</p>
+            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
+              <div className="text-2xl md:text-3xl font-bold text-green-500 mb-1">85%</div>
+              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.finalWinner')}</p>
             </div>
-            <div className="p-4 rounded-xl bg-slate-700/30">
-              <div className="text-3xl font-bold text-blue-500 mb-1">5%</div>
-              <p className="text-slate-400 text-sm">Consolation</p>
+            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
+              <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1">5%</div>
+              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.consolation')}</p>
             </div>
           </div>
         </Card>
@@ -193,10 +193,10 @@ export default function HowItWorksPage() {
 
       {/* CTA */}
       <div className="text-center">
-        <Link href="/dashboard">
-          <Button size="xl">
-            Start Playing Now
-            <ArrowRight className="h-5 w-5 ml-2" />
+        <Link href="/">
+          <Button size="lg" className="w-full sm:w-auto">
+            {t('howItWorks.startPlaying')}
+            <ArrowRight className="h-5 w-5" />
           </Button>
         </Link>
       </div>

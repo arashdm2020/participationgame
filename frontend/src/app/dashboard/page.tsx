@@ -1,119 +1,34 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useAccount, useReadContract } from 'wagmi'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { useAccount } from 'wagmi'
+import { Card, CardContent } from '@/components/ui/card'
 import { GameStats } from '@/components/game/GameStats'
 import { BuyShares } from '@/components/game/BuyShares'
 import { VotingPanel } from '@/components/game/VotingPanel'
 import { GameProgress } from '@/components/game/GameProgress'
 import { WinnersHistory } from '@/components/game/WinnersHistory'
-import { PARTICIPATION_GAME_ABI, GameStatus, GAME_STATUS_NAMES } from '@/config/contracts'
-import { networks } from '@/config/networks'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Wallet, TrendingUp, Vote, History } from 'lucide-react'
-import { parseEther } from 'viem'
+import { Wallet, Coins, Users, Trophy } from 'lucide-react'
+import { useContractData, useGameStatus } from '@/lib/hooks'
+import { formatLUSD } from '@/lib/utils'
 
 export default function DashboardPage() {
   const t = useTranslations()
-  const { address, isConnected } = useAccount()
-  
-  // Use testnet config for now
-  const network = networks.testnet
-  const contractAddress = network.contractAddress
-
-  // Read current game ID
-  const { data: currentGameId } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'currentGameId',
-  })
-
-  // Read game details
-  const { data: gameDetails } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'getGameDetails',
-    args: currentGameId ? [currentGameId] : undefined,
-  })
-
-  // Read participant count
-  const { data: participantCount } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'getParticipantCount',
-    args: currentGameId ? [currentGameId] : undefined,
-  })
-
-  // Read active participants
-  const { data: activeParticipants } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'getActiveParticipants',
-    args: currentGameId ? [currentGameId] : undefined,
-  })
-
-  // Read vote tallies
-  const { data: voteTallies } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'getVoteTallies',
-    args: currentGameId ? [currentGameId] : undefined,
-  })
-
-  // Read user participation
-  const { data: userParticipation } = useReadContract({
-    address: contractAddress,
-    abi: PARTICIPATION_GAME_ABI,
-    functionName: 'getParticipant',
-    args: currentGameId && address ? [currentGameId, address] : undefined,
-  })
-
-  // Parse game details
-  const gameData = gameDetails ? {
-    tokenCap: gameDetails.tokenCap,
-    totalRevenue: gameDetails.totalRevenue,
-    prizePool: gameDetails.prizePool,
-    status: gameDetails.status as GameStatus,
-    votingDeadline: Number(gameDetails.votingDeadline),
-  } : null
-
-  const isVotingPhase = gameData && (
-    gameData.status === GameStatus.Voting8 ||
-    gameData.status === GameStatus.Voting4 ||
-    gameData.status === GameStatus.Voting2
-  )
-
-  const getVotingStage = (): 8 | 4 | 2 => {
-    if (gameData?.status === GameStatus.Voting8) return 8
-    if (gameData?.status === GameStatus.Voting4) return 4
-    return 2
-  }
-
-  const isUserParticipant = activeParticipants?.includes(address as `0x${string}`) ?? false
-  const hasUserVoted = userParticipation?.hasVotedInCurrentStage ?? false
-
-  // Mock winners data for now
-  const mockWinners = [
-    {
-      gameId: 45,
-      address: '0x7899...79c8',
-      prizeAmount: '2125000000000000000000',
-      date: '1403/07/25',
-    },
-  ]
+  const { isConnected } = useAccount()
+  const { gameId, userShares, isParticipant, lusdBalance } = useContractData()
+  const { statusName, isVoting, isBuying } = useGameStatus()
 
   if (!isConnected) {
     return (
-      <div className="container mx-auto px-4 py-20">
-        <Card className="max-w-md mx-auto text-center p-8">
-          <Wallet className="h-16 w-16 mx-auto mb-6 text-amber-500" />
-          <h2 className="text-2xl font-bold text-white mb-4">
+      <div className="container mx-auto px-4 py-12 md:py-20">
+        <Card className="glass-card max-w-md mx-auto text-center p-6 md:p-8">
+          <Wallet className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-4 md:mb-6 text-amber-500" />
+          <h2 className="text-xl md:text-2xl font-bold text-white mb-3 md:mb-4">
             {t('errors.walletNotConnected')}
           </h2>
-          <p className="text-slate-400 mb-6">
-            Connect your wallet to access the dashboard
+          <p className="text-slate-400 mb-4 md:mb-6 text-sm md:text-base">
+            {t('dashboard.connectToAccess')}
           </p>
           <ConnectButton />
         </Card>
@@ -122,59 +37,80 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      {/* Header */}
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
           {t('dashboard.title')}
         </h1>
-        <p className="text-slate-400">
-          Game #{currentGameId?.toString() || '...'} • {gameData ? GAME_STATUS_NAMES[gameData.status] : '...'}
+        <p className="text-slate-400 text-sm md:text-base">
+          {t('winners.round')} #{gameId?.toString() || '1'} • {statusName}
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        {/* Game Stats */}
-        <GameStats
-          tokenCap={gameData?.tokenCap ?? BigInt(0)}
-          totalRevenue={gameData?.totalRevenue ?? BigInt(0)}
-          prizePool={gameData?.prizePool ?? BigInt(0)}
-          participantCount={Number(participantCount ?? 0)}
-          activeParticipants={activeParticipants?.length ?? 0}
-          status={gameData ? GAME_STATUS_NAMES[gameData.status] : 'Buying'}
-        />
+      {/* User Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+        <Card className="glass-card p-3 md:p-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-2 rounded-lg bg-green-500/10">
+              <Coins className="h-4 w-4 md:h-5 md:w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="text-[10px] md:text-xs text-slate-400">{t('dashboard.myShares')}</p>
+              <p className="text-lg md:text-xl font-bold text-white">{userShares.toString()}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="glass-card p-3 md:p-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-2 rounded-lg bg-amber-500/10">
+              <Wallet className="h-4 w-4 md:h-5 md:w-5 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-[10px] md:text-xs text-slate-400">{t('dashboard.balance')}</p>
+              <p className="text-lg md:text-xl font-bold text-white">{formatLUSD(lusdBalance || 0n)}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="glass-card p-3 md:p-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-2 rounded-lg bg-blue-500/10">
+              <Users className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-[10px] md:text-xs text-slate-400">{t('dashboard.status')}</p>
+              <p className="text-sm md:text-base font-bold text-white">
+                {isParticipant ? t('dashboard.participating') : t('dashboard.notParticipating')}
+              </p>
+            </div>
+          </div>
+        </Card>
+        <Card className="glass-card p-3 md:p-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <div className="p-2 rounded-lg bg-purple-500/10">
+              <Trophy className="h-4 w-4 md:h-5 md:w-5 text-purple-500" />
+            </div>
+            <div>
+              <p className="text-[10px] md:text-xs text-slate-400">{t('dashboard.gamePhase')}</p>
+              <p className="text-sm md:text-base font-bold text-white">{statusName}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
 
-        {/* Buy Shares or Voting Panel */}
-        {isVotingPhase ? (
-          <VotingPanel
-            contractAddress={contractAddress}
-            gameId={Number(currentGameId ?? 1)}
-            stage={getVotingStage()}
-            continueVotes={Number(voteTallies?.[0] ?? 0)}
-            stopVotes={Number(voteTallies?.[1] ?? 0)}
-            votingDeadline={gameData?.votingDeadline ?? 0}
-            hasVoted={hasUserVoted}
-            isParticipant={isUserParticipant}
-          />
-        ) : (
-          <BuyShares
-            contractAddress={contractAddress}
-            lusdAddress={network.lusdAddress}
-            sharePrice={parseEther('1')}
-            maxShares={1000}
-          />
-        )}
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+        <GameStats />
+        {isBuying ? <BuyShares /> : <VotingPanel variant="full" />}
       </div>
 
       {/* Game Progress */}
-      <div className="mb-8">
-        <GameProgress status={gameData?.status ?? GameStatus.Buying} />
+      <div className="mb-6">
+        <GameProgress />
       </div>
 
       {/* Winners History */}
-      <WinnersHistory
-        winners={mockWinners}
-        blockExplorer={network.blockExplorer}
-      />
+      <WinnersHistory />
     </div>
   )
 }

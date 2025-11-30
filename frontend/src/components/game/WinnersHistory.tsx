@@ -1,29 +1,31 @@
 'use client'
 
-import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Trophy, Calendar, Coins, ExternalLink, ChevronDown } from 'lucide-react'
+import { Trophy, ExternalLink, Loader2, Hash } from 'lucide-react'
 import { formatAddress, formatLUSD } from '@/lib/utils'
-
-// Mock data - in production this would come from contract events
-const mockWinners = [
-  {
-    gameId: 45,
-    address: '0x1234567890abcdef1234567890abcdef12345678',
-    prizeAmount: '2125000000000000000000',
-    date: '۱۴۰۳/۰۷/۲۵',
-    txHash: '0xabc123',
-  },
-]
+import { useContractData, useGameStatus } from '@/lib/hooks'
+import { BLOCK_EXPLORER } from '@/config/wagmi'
 
 export function WinnersHistory() {
   const t = useTranslations('winners')
-  const [selectedRound, setSelectedRound] = useState<number | null>(45)
-  
-  const blockExplorer = 'https://sepolia.arbiscan.io'
-  const winners = mockWinners
+  const { gameId, gameDetails, gameWinner, isLoading } = useContractData()
+  const { isFinished } = useGameStatus()
+
+  const prizePool = gameDetails?.prizePool || 0n
+  // 85% goes to winner
+  const winnerPrize = (prizePool * 85n) / 100n
+  const hasWinner = gameWinner && gameWinner !== '0x0000000000000000000000000000000000000000'
+
+  if (isLoading) {
+    return (
+      <Card className="glass-card">
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="glass-card">
@@ -33,71 +35,57 @@ export function WinnersHistory() {
             <Trophy className="h-5 w-5 text-amber-500" />
             {t('title')}
           </CardTitle>
-          <Button variant="secondary" size="sm" className="text-xs gap-1">
-            {t('round')} #{selectedRound || 45}
-            <ChevronDown className="h-3 w-3" />
-          </Button>
+          <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-slate-700/50 text-xs">
+            <Hash className="h-3 w-3 text-amber-500" />
+            <span className="text-slate-300">{t('round')} {gameId?.toString()}</span>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
-        {winners.length === 0 ? (
-          <p className="text-center text-slate-400 py-8">{t('noWinners')}</p>
+        {!hasWinner ? (
+          <div className="text-center py-8">
+            <Trophy className="h-12 w-12 text-slate-600 mx-auto mb-3" />
+            <p className="text-slate-400">{t('noWinners')}</p>
+            <p className="text-slate-500 text-sm mt-1">
+              {isFinished ? t('noWinners') : t('gameInProgress')}
+            </p>
+          </div>
         ) : (
-          <div className="space-y-3">
-            {winners.map((winner) => (
-              <div
-                key={winner.gameId}
-                className="flex items-center justify-between p-4 rounded-xl bg-slate-700/30 border border-slate-600/50 hover:border-amber-500/30 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  {/* Round Badge */}
-                  <div className="flex flex-col items-center justify-center w-14 h-14 rounded-xl bg-slate-800 border border-slate-600">
-                    <span className="text-[10px] text-slate-400">{t('round')}</span>
-                    <span className="text-lg font-bold text-amber-500">
-                      #{winner.gameId}
-                    </span>
-                  </div>
-
-                  {/* Details */}
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-slate-400">
-                      <Calendar className="h-4 w-4" />
-                      <span>{t('date')}: {winner.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Coins className="h-4 w-4 text-green-500" />
-                      <span className="text-green-400 font-semibold">
-                        {t('prize')}: {formatLUSD(BigInt(winner.prizeAmount))} LUSD
-                      </span>
-                    </div>
-                  </div>
+          <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              {/* Winner Info */}
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
+                  <Trophy className="h-7 w-7 text-white" />
                 </div>
-
-                {/* Winner Info */}
-                <div className="flex items-center gap-3">
-                  <div className="text-end">
-                    <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
-                      {t('finalWinner')}
-                    </span>
-                    <div className="mt-1 flex items-center gap-2 justify-end">
-                      <code className="text-sm text-slate-300">
-                        {formatAddress(winner.address)}
-                      </code>
-                      {winner.txHash && (
-                        <a
-                          href={`${blockExplorer}/tx/${winner.txHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-amber-500 hover:text-amber-400"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                    </div>
+                <div>
+                  <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
+                    {t('finalWinner')}
+                  </span>
+                  <div className="mt-1 flex items-center gap-2">
+                    <code className="text-sm text-slate-300">
+                      {formatAddress(gameWinner)}
+                    </code>
+                    <a
+                      href={`${BLOCK_EXPLORER}/address/${gameWinner}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-amber-500 hover:text-amber-400"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
                   </div>
                 </div>
               </div>
-            ))}
+
+              {/* Prize Amount */}
+              <div className="text-center sm:text-end">
+                <p className="text-slate-400 text-sm">{t('prize')}</p>
+                <p className="text-2xl font-bold text-green-400">
+                  {formatLUSD(winnerPrize)} LUSD
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>

@@ -16,56 +16,24 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   const faqs: FAQItem[] = [
-    {
-      question: 'What is Participation Game?',
-      answer: 'Participation Game is a decentralized lottery platform built on Arbitrum. It uses smart contracts and Chainlink VRF to ensure fair and transparent random selection of winners.',
-    },
-    {
-      question: 'How do I participate?',
-      answer: 'Connect your wallet, ensure you have LUSD (DAI) tokens, and purchase shares in the current game. Each share costs 1 DAI. The more shares you buy, the higher your chances of being selected.',
-    },
-    {
-      question: 'What is LUSD?',
-      answer: 'LUSD is a decentralized stablecoin pegged to USD. In our game, we use DAI as the primary token for purchasing shares and receiving prizes.',
-    },
-    {
-      question: 'How are winners selected?',
-      answer: 'When the token cap is reached, Chainlink VRF (Verifiable Random Function) is used to randomly select 8 participants. These 8 then go through voting rounds (8→4→2) until a final winner is determined.',
-    },
-    {
-      question: 'What are the voting rounds?',
-      answer: 'After elimination, the remaining 8 participants vote on whether to continue or stop the game. Each round lasts 24 hours. If majority votes to continue, half are eliminated randomly. This continues until 2 remain or majority votes to stop.',
-    },
-    {
-      question: 'How is the prize distributed?',
-      answer: '90% of total revenue goes to the prize pool. Of this, 85% goes to the final winner and 5% is distributed as consolation prizes to runners-up. 10% is the platform fee.',
-    },
-    {
-      question: 'Is it safe?',
-      answer: 'Yes! The smart contract is built with security best practices including OpenZeppelin contracts, reentrancy guards, and pausable functionality. All transactions are on-chain and verifiable.',
-    },
-    {
-      question: 'What network does it run on?',
-      answer: 'Participation Game runs on Arbitrum, an Ethereum Layer 2 solution. This provides fast transactions and low gas fees while maintaining Ethereum security.',
-    },
-    {
-      question: 'Can I withdraw my shares?',
-      answer: 'Once shares are purchased, they cannot be withdrawn. However, if you win, you can specify any address to receive your prize.',
-    },
-    {
-      question: 'How long does a game last?',
-      answer: 'Game duration depends on how quickly the token cap is reached. The target is 7 days. If it takes longer, the cap is reduced for the next game. If faster, the cap is increased.',
-    },
+    { question: t('faq.q1'), answer: t('faq.a1') },
+    { question: t('faq.q2'), answer: t('faq.a2') },
+    { question: t('faq.q3'), answer: t('faq.a3') },
+    { question: t('faq.q4'), answer: t('faq.a4') },
+    { question: t('faq.q5'), answer: t('faq.a5') },
+    { question: t('faq.q6'), answer: t('faq.a6') },
+    { question: t('faq.q7'), answer: t('faq.a7') },
+    { question: t('faq.q8'), answer: t('faq.a8') },
   ]
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-8 md:py-12">
       {/* Header */}
-      <div className="text-center mb-12">
-        <HelpCircle className="h-16 w-16 mx-auto mb-4 text-amber-500" />
-        <h1 className="text-4xl font-bold text-white mb-4">{t('nav.faq')}</h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-          Find answers to commonly asked questions about Participation Game
+      <div className="text-center mb-8 md:mb-12">
+        <HelpCircle className="h-12 w-12 md:h-16 md:w-16 mx-auto mb-4 text-amber-500" />
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('faq.title')}</h1>
+        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+          {t('faq.subtitle')}
         </p>
       </div>
 
@@ -101,26 +69,22 @@ export default function FAQPage() {
       </div>
 
       {/* Contact */}
-      <div className="max-w-3xl mx-auto mt-12 text-center">
-        <Card className="p-8">
-          <h2 className="text-xl font-semibold text-white mb-2">
-            Still have questions?
+      <div className="max-w-3xl mx-auto mt-8 md:mt-12 text-center">
+        <Card className="glass-card p-6 md:p-8">
+          <h2 className="text-lg md:text-xl font-semibold text-white mb-2">
+            {t('faq.stillHaveQuestions')}
           </h2>
-          <p className="text-slate-400 mb-4">
-            Join our community on Discord or Telegram for more help
+          <p className="text-slate-400 mb-4 text-sm md:text-base">
+            {t('faq.joinCommunity')}
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
             <a
-              href="#"
-              className="px-6 py-2 rounded-lg bg-[#5865F2] text-white font-medium hover:bg-[#4752C4] transition-colors"
+              href="https://github.com/arashdm2020/Participation-Game"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-2 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-600 transition-colors"
             >
-              Discord
-            </a>
-            <a
-              href="#"
-              className="px-6 py-2 rounded-lg bg-[#0088cc] text-white font-medium hover:bg-[#0077b5] transition-colors"
-            >
-              Telegram
+              GitHub
             </a>
           </div>
         </Card>

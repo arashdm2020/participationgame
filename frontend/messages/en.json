@@ -1,0 +1,173 @@
+{
+  "common": {
+    "appName": "Participation Game",
+    "tagline": "Transparency • Justice • Participation",
+    "connectWallet": "Connect Wallet",
+    "disconnect": "Disconnect",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "noData": "No data available",
+    "viewAll": "View All",
+    "learnMore": "Learn More"
+  },
+  "nav": {
+    "home": "Home",
+    "howItWorks": "How It Works",
+    "winners": "Winners",
+    "faq": "FAQ",
+    "dashboard": "Dashboard",
+    "admin": "Admin Panel"
+  },
+  "landing": {
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Buy Shares",
+        "description": "Purchase shares with LUSD token to enter the game"
+      },
+      "step2": {
+        "title": "Quick Elimination",
+        "description": "Random elimination reduces participants to 8"
+      },
+      "step3": {
+        "title": "Voting Rounds",
+        "description": "8→4→2 voting stages with community decisions"
+      },
+      "step4": {
+        "title": "Winner Selection",
+        "description": "Final winner receives 85% of the prize pool"
+      }
+    }
+  },
+  "game": {
+    "stats": {
+      "title": "Game Statistics",
+      "progress": "Sale Progress",
+      "sharesSold": "Shares Sold",
+      "activeParticipants": "Active Participants",
+      "totalParticipants": "Total Participants",
+      "prizePool": "Prize Pool",
+      "sold": "Sold",
+      "remaining": "Remaining"
+    },
+    "buy": {
+      "title": "Buy Shares",
+      "amount": "Number of Shares",
+      "totalCost": "Total Cost",
+      "buyButton": "Buy {amount} Share",
+      "approveFirst": "Approve First",
+      "insufficientBalance": "Insufficient Balance",
+      "quickSelect": "Quick Select"
+    },
+    "voting": {
+      "title": "Voting Panel",
+      "stageVotes": "Stage Votes",
+      "stage": "Participants",
+      "stage8": "8 Participants",
+      "stage4": "4 Participants",
+      "stage2": "2 Participants",
+      "results": "Voting Results",
+      "continueVotes": "Continue",
+      "stopVotes": "Stop",
+      "continue": "Continue",
+      "stop": "Stop",
+      "castVote": "Cast Your Vote",
+      "voteContinue": "Continue Game",
+      "voteStop": "Stop Game",
+      "timeRemaining": "Time Remaining",
+      "votingEnded": "Voting Ended",
+      "alreadyVoted": "You have already voted",
+      "notParticipant": "You are not a participant"
+    },
+    "progress": {
+      "title": "Game Progress",
+      "selling": "Selling",
+      "sellingDesc": "Buy shares",
+      "elimination": "Elimination",
+      "eliminationDesc": "8 participants",
+      "voting8": "Voting 8",
+      "voting8Desc": "8 people",
+      "voting4": "Voting 4",
+      "voting4Desc": "4 people",
+      "winner": "Winner",
+      "winnerDesc": "Final",
+      "status": {
+        "Buying": "Selling",
+        "CapReached": "Cap Reached",
+        "VRF_Request": "Processing",
+        "Eliminating": "Eliminating",
+        "Voting8": "Voting (8)",
+        "Voting4": "Voting (4)",
+        "Voting2": "Voting (2)",
+        "Finished": "Finished"
+      }
+    }
+  },
+  "winners": {
+    "title": "Winners History",
+    "round": "Round",
+    "date": "Date",
+    "prize": "Prize",
+    "winner": "Winner",
+    "finalWinner": "Final Winner",
+    "noWinners": "No winners yet"
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "myGames": "My Games",
+    "myShares": "My Shares",
+    "myVotes": "My Votes",
+    "totalSpent": "Total Spent",
+    "totalWon": "Total Won",
+    "activeGames": "Active Games",
+    "history": "History",
+    "noParticipation": "You haven't participated in any games yet"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "overview": "Overview",
+    "contractControl": "Contract Control",
+    "users": "Users",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "actions": {
+      "requestVRF": "Request VRF",
+      "processVoting": "Process Voting",
+      "distributePrizes": "Distribute Prizes",
+      "pause": "Pause Game",
+      "unpause": "Unpause Game",
+      "setOperator": "Set Operator"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "totalGames": "Total Games",
+      "totalVolume": "Total Volume",
+      "platformFees": "Platform Fees"
+    },
+    "network": {
+      "title": "Network Settings",
+      "current": "Current Network",
+      "switchToMainnet": "Switch to Mainnet",
+      "switchToTestnet": "Switch to Testnet",
+      "warning": "Warning: Switching networks will affect all operations"
+    }
+  },
+  "errors": {
+    "walletNotConnected": "Please connect your wallet",
+    "wrongNetwork": "Please switch to Arbitrum network",
+    "transactionFailed": "Transaction failed",
+    "insufficientFunds": "Insufficient funds",
+    "gameNotActive": "Game is not active",
+    "alreadyVoted": "You have already voted",
+    "notParticipant": "You are not a participant"
+  }
+}

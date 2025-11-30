@@ -1,0 +1,173 @@
+{
+  "common": {
+    "appName": "بازی مشارکت",
+    "tagline": "شفافیت • عدالت • مشارکت",
+    "connectWallet": "اتصال کیف پول",
+    "disconnect": "قطع اتصال",
+    "loading": "در حال بارگذاری...",
+    "error": "خطا",
+    "success": "موفق",
+    "cancel": "انصراف",
+    "confirm": "تأیید",
+    "save": "ذخیره",
+    "close": "بستن",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "submit": "ارسال",
+    "search": "جستجو",
+    "noData": "داده‌ای موجود نیست",
+    "viewAll": "مشاهده همه",
+    "learnMore": "بیشتر بدانید"
+  },
+  "nav": {
+    "home": "خانه",
+    "howItWorks": "نحوه کار",
+    "winners": "برندگان",
+    "faq": "سوالات متداول",
+    "dashboard": "داشبورد",
+    "admin": "پنل مدیریت"
+  },
+  "landing": {
+    "howItWorks": {
+      "title": "نحوه کار",
+      "step1": {
+        "title": "خرید سهم",
+        "description": "با توکن LUSD سهم بخرید تا وارد بازی شوید"
+      },
+      "step2": {
+        "title": "حذف سریع",
+        "description": "حذف تصادفی شرکت‌کنندگان را به ۸ نفر کاهش می‌دهد"
+      },
+      "step3": {
+        "title": "دورهای رای‌گیری",
+        "description": "مراحل رای‌گیری ۸←۴←۲ با تصمیمات جمعی"
+      },
+      "step4": {
+        "title": "انتخاب برنده",
+        "description": "برنده نهایی ۸۵٪ صندوق جایزه را دریافت می‌کند"
+      }
+    }
+  },
+  "game": {
+    "stats": {
+      "title": "آمار مشارکت",
+      "progress": "پیشرفت فروش",
+      "sharesSold": "سهم فروخته شده",
+      "activeParticipants": "شرکت‌کنندگان فعال",
+      "totalParticipants": "کل شرکت‌کنندگان",
+      "prizePool": "صندوق جوایز",
+      "sold": "فروخته",
+      "remaining": "مانده"
+    },
+    "buy": {
+      "title": "خرید سهم",
+      "amount": "تعداد سهم",
+      "totalCost": "هزینه کل",
+      "buyButton": "خرید {amount} سهم",
+      "approveFirst": "ابتدا تأیید کنید",
+      "insufficientBalance": "موجودی ناکافی",
+      "quickSelect": "انتخاب سریع"
+    },
+    "voting": {
+      "title": "پنل رای‌گیری",
+      "stageVotes": "آرای مراحل",
+      "stage": "نفره",
+      "stage8": "۸ نفره",
+      "stage4": "۴ نفره",
+      "stage2": "۲ نفره",
+      "results": "نتایج رای‌گیری",
+      "continueVotes": "ادامه مشارکت",
+      "stopVotes": "توقف مشارکت",
+      "continue": "ادامه",
+      "stop": "توقف",
+      "castVote": "رای خود را ثبت کنید",
+      "voteContinue": "ادامه مشارکت",
+      "voteStop": "توقف مشارکت",
+      "timeRemaining": "زمان باقیمانده",
+      "votingEnded": "رای‌گیری پایان یافت",
+      "alreadyVoted": "شما قبلاً رای داده‌اید",
+      "notParticipant": "شما شرکت‌کننده نیستید"
+    },
+    "progress": {
+      "title": "پیشرفت مشارکت",
+      "selling": "فروش سهم",
+      "sellingDesc": "سهم بخرید",
+      "elimination": "حذف سریع",
+      "eliminationDesc": "۸ شرکت‌کننده",
+      "voting8": "رای‌گیری ۸",
+      "voting8Desc": "۸ نفره",
+      "voting4": "رای‌گیری ۴",
+      "voting4Desc": "۴ نفره",
+      "winner": "برنده",
+      "winnerDesc": "نهایی",
+      "status": {
+        "Buying": "در حال فروش",
+        "CapReached": "سقف رسیده",
+        "VRF_Request": "در حال پردازش",
+        "Eliminating": "حذف سریع",
+        "Voting8": "رای‌گیری ۸ نفره",
+        "Voting4": "رای‌گیری ۴ نفره",
+        "Voting2": "رای‌گیری ۲ نفره",
+        "Finished": "پایان یافته"
+      }
+    }
+  },
+  "winners": {
+    "title": "تاریخچه برندگان",
+    "round": "دوره",
+    "date": "تاریخ",
+    "prize": "جایزه",
+    "winner": "برنده",
+    "finalWinner": "برنده نهایی",
+    "noWinners": "هنوز برنده‌ای وجود ندارد"
+  },
+  "dashboard": {
+    "title": "داشبورد من",
+    "myGames": "بازی‌های من",
+    "myShares": "سهام من",
+    "myVotes": "رای‌های من",
+    "totalSpent": "کل هزینه",
+    "totalWon": "کل برد",
+    "activeGames": "بازی‌های فعال",
+    "history": "تاریخچه",
+    "noParticipation": "شما هنوز در هیچ بازی شرکت نکرده‌اید"
+  },
+  "admin": {
+    "title": "داشبورد مدیریت",
+    "overview": "نمای کلی",
+    "contractControl": "کنترل قرارداد",
+    "users": "کاربران",
+    "analytics": "تحلیل‌ها",
+    "settings": "تنظیمات",
+    "actions": {
+      "requestVRF": "درخواست تصادفی",
+      "processVoting": "پردازش رای‌گیری",
+      "distributePrizes": "توزیع جوایز",
+      "pause": "توقف بازی",
+      "unpause": "ادامه بازی",
+      "setOperator": "تنظیم اپراتور"
+    },
+    "stats": {
+      "totalUsers": "کل کاربران",
+      "totalGames": "کل بازی‌ها",
+      "totalVolume": "کل حجم",
+      "platformFees": "کارمزد پلتفرم"
+    },
+    "network": {
+      "title": "تنظیمات شبکه",
+      "current": "شبکه فعلی",
+      "switchToMainnet": "تغییر به شبکه اصلی",
+      "switchToTestnet": "تغییر به شبکه تست",
+      "warning": "هشدار: تغییر شبکه روی تمام عملیات تأثیر می‌گذارد"
+    }
+  },
+  "errors": {
+    "walletNotConnected": "لطفاً کیف پول خود را متصل کنید",
+    "wrongNetwork": "لطفاً به شبکه آربیتروم تغییر دهید",
+    "transactionFailed": "تراکنش ناموفق بود",
+    "insufficientFunds": "موجودی ناکافی",
+    "gameNotActive": "بازی فعال نیست",
+    "alreadyVoted": "شما قبلاً رای داده‌اید",
+    "notParticipant": "شما شرکت‌کننده نیستید"
+  }
+}

@@ -1,0 +1,121 @@
+// Prisma Schema for Participation Game
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========== MODELS ==========
+
+model User {
+  id            String          @id @default(cuid())
+  walletAddress String          @unique
+  isAdmin       Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  participations Participation[]
+  votes          Vote[]
+}
+
+model Game {
+  id             Int        @id
+  tokenCap       Decimal    @db.Decimal(78, 0)
+  totalRevenue   Decimal    @default(0) @db.Decimal(78, 0)
+  prizePool      Decimal    @default(0) @db.Decimal(78, 0)
+  platformFee    Decimal    @default(0) @db.Decimal(78, 0)
+  status         GameStatus @default(Buying)
+  startTime      DateTime
+  endTime        DateTime?
+  votingDeadline DateTime?
+  winnerAddress  String?
+
+  participations Participation[]
+  votes          Vote[]
+
+  syncedAt DateTime @default(now())
+  
+  @@index([status])
+}
+
+model Participation {
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    Int
+  shares    Decimal  @db.Decimal(78, 0)
+  txHash    String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@index([userId])
+  @@index([gameId])
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  gameId    Int
+  stage     Int      // 8, 4, 2
+  decision  Boolean  // true=continue, false=stop
+  txHash    String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+
+  @@index([userId])
+  @@index([gameId])
+}
+
+model AdminAction {
+  id           String   @id @default(cuid())
+  adminAddress String
+  action       String   // requestVRF, processVoting, distributePrize, etc.
+  gameId       Int?
+  txHash       String?
+  status       String   @default("pending") // pending, success, failed
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([adminAddress])
+  @@index([gameId])
+}
+
+model AppSettings {
+  id              String   @id @default("main")
+  contractAddress String
+  networkId       Int      // 421614 for Sepolia, 42161 for Mainnet
+  networkName     String   @default("Arbitrum Sepolia")
+  isMainnet       Boolean  @default(false)
+  lusdAddress     String
+  vrfCoordinator  String?
+  updatedAt       DateTime @updatedAt
+}
+
+model Winner {
+  id          String   @id @default(cuid())
+  gameId      Int      @unique
+  address     String
+  prizeAmount Decimal  @db.Decimal(78, 0)
+  txHash      String?
+  claimedAt   DateTime @default(now())
+
+  @@index([address])
+}
+
+enum GameStatus {
+  Buying
+  CapReached
+  VRF_Request
+  Eliminating
+  Voting8
+  Voting4
+  Voting2
+  Finished
+}

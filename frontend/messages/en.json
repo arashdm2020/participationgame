@@ -103,10 +103,17 @@
       "title": "Buy Shares",
       "amount": "Number of Shares",
       "totalCost": "Total Cost",
-      "buyButton": "Buy {amount} Share",
-      "approveFirst": "Approve First",
+      "buyButton": "Buy {amount} Shares",
+      "approveFirst": "Approve LUSD",
       "insufficientBalance": "Insufficient Balance",
-      "quickSelect": "Quick Select"
+      "quickSelect": "Quick Select",
+      "wrongNetwork": "Please switch to Arbitrum Sepolia network",
+      "switchNetwork": "Switch Network",
+      "connectWallet": "Connect Wallet",
+      "waitingApproval": "Waiting for approval...",
+      "processing": "Processing...",
+      "approved": "Approved! You can now buy shares",
+      "purchaseSuccess": "Purchase successful! Your shares are recorded"
     },
     "voting": {
       "title": "Voting Panel",

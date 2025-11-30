@@ -104,9 +104,16 @@
       "amount": "تعداد سهم",
       "totalCost": "هزینه کل",
       "buyButton": "خرید {amount} سهم",
-      "approveFirst": "ابتدا تأیید کنید",
+      "approveFirst": "تأیید LUSD",
       "insufficientBalance": "موجودی ناکافی",
-      "quickSelect": "انتخاب سریع"
+      "quickSelect": "انتخاب سریع",
+      "wrongNetwork": "لطفاً به شبکه Arbitrum Sepolia تغییر دهید",
+      "switchNetwork": "تغییر شبکه",
+      "connectWallet": "اتصال کیف پول",
+      "waitingApproval": "در انتظار تأیید...",
+      "processing": "در حال پردازش...",
+      "approved": "تأیید شد! حالا می‌توانید خرید کنید",
+      "purchaseSuccess": "خرید موفق! سهام شما ثبت شد"
     },
     "voting": {
       "title": "پنل رای‌گیری",

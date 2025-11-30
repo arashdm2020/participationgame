@@ -1,30 +1,48 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { useAccount, useWriteContract } from 'wagmi'
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseEther } from 'viem'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Plus, Minus, Loader2 } from 'lucide-react'
+import { ShoppingCart, Plus, Minus, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { PARTICIPATION_GAME_ABI, ERC20_ABI } from '@/config/contracts'
 import { formatLUSD } from '@/lib/utils'
 import { useContractData } from '@/lib/hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function BuyShares() {
   const t = useTranslations('game.buy')
-  const { address, isConnected } = useAccount()
+  const { address, isConnected, chain } = useAccount()
   const [amount, setAmount] = useState(1)
   const { contractAddress, lusdAddress, lusdBalance, lusdAllowance } = useContractData()
+  const queryClient = useQueryClient()
 
-  const sharePrice = parseEther('1') // 1 DAI per share
+  const sharePrice = parseEther('1') // 1 LUSD per share
   const quickAmounts = [10, 20, 50, 100]
 
+  // Check if on correct network (Arbitrum Sepolia = 421614)
+  const isWrongNetwork = chain?.id !== 421614
+
   // Approve LUSD
-  const { writeContract: approve, isPending: isApproving } = useWriteContract()
+  const { writeContract: approve, isPending: isApproving, data: approveHash } = useWriteContract()
+  const { isLoading: isWaitingApprove, isSuccess: approveSuccess } = useWaitForTransactionReceipt({
+    hash: approveHash,
+  })
 
   // Buy shares
-  const { writeContract: buyShares, isPending: isBuying } = useWriteContract()
+  const { writeContract: buyShares, isPending: isBuying, data: buyHash } = useWriteContract()
+  const { isLoading: isWaitingBuy, isSuccess: buySuccess } = useWaitForTransactionReceipt({
+    hash: buyHash,
+  })
+
+  // Refresh data after successful transactions
+  useEffect(() => {
+    if (approveSuccess || buySuccess) {
+      queryClient.invalidateQueries()
+    }
+  }, [approveSuccess, buySuccess, queryClient])
 
   const totalCost = BigInt(amount) * sharePrice
   const needsApproval = (lusdAllowance || 0n) < totalCost
@@ -117,10 +135,37 @@ export function BuyShares() {
           </div>
         </div>
 
+        {/* Wrong Network Warning */}
+        {isWrongNetwork && isConnected && (
+          <div className="p-3 rounded-xl bg-red-500/20 border border-red-500/50 flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+            <span className="text-red-400 text-sm">{t('wrongNetwork')}</span>
+          </div>
+        )}
+
+        {/* Success Messages */}
+        {approveSuccess && !needsApproval && (
+          <div className="p-3 rounded-xl bg-green-500/20 border border-green-500/50 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />
+            <span className="text-green-400 text-sm">{t('approved')}</span>
+          </div>
+        )}
+
+        {buySuccess && (
+          <div className="p-3 rounded-xl bg-green-500/20 border border-green-500/50 flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />
+            <span className="text-green-400 text-sm">{t('purchaseSuccess')}</span>
+          </div>
+        )}
+
         {/* Action Button */}
         {!isConnected ? (
           <Button className="w-full" size="lg" disabled>
-            {t('approveFirst')}
+            {t('connectWallet')}
+          </Button>
+        ) : isWrongNetwork ? (
+          <Button className="w-full" size="lg" variant="destructive" disabled>
+            {t('switchNetwork')}
           </Button>
         ) : !hasBalance ? (
           <Button className="w-full" size="lg" variant="destructive" disabled>
@@ -131,20 +176,20 @@ export function BuyShares() {
             className="w-full"
             size="lg"
             onClick={handleApprove}
-            disabled={isApproving}
+            disabled={isApproving || isWaitingApprove}
           >
-            {isApproving && <Loader2 className="h-4 w-4 animate-spin" />}
-            {t('approveFirst')}
+            {(isApproving || isWaitingApprove) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            {isWaitingApprove ? t('waitingApproval') : t('approveFirst')}
           </Button>
         ) : (
           <Button
             className="w-full"
             size="lg"
             onClick={handleBuy}
-            disabled={isBuying}
+            disabled={isBuying || isWaitingBuy}
           >
-            {isBuying && <Loader2 className="h-4 w-4 animate-spin" />}
-            {t('buyButton', { amount })}
+            {(isBuying || isWaitingBuy) && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            {isWaitingBuy ? t('processing') : t('buyButton', { amount })}
           </Button>
         )}
       </CardContent>

@@ -3,32 +3,22 @@
 import { useTranslations } from 'next-intl'
 import { useAccount } from 'wagmi'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { GameStats } from '@/components/game/GameStats'
 import { BuyShares } from '@/components/game/BuyShares'
 import { VotingPanel } from '@/components/game/VotingPanel'
 import { GameProgress } from '@/components/game/GameProgress'
 import { WinnersHistory } from '@/components/game/WinnersHistory'
 import { useContractData, useGameStatus } from '@/lib/hooks'
-import { formatLUSD } from '@/lib/utils'
+import { formatLUSD, formatAddress } from '@/lib/utils'
+import { BLOCK_EXPLORER } from '@/config/wagmi'
 import Link from 'next/link'
-import {
-  Trophy,
-  Users,
-  Coins,
-  TrendingUp,
-  Zap,
-  ArrowRight,
-  Play,
-  Shield,
-  Sparkles,
-  Target,
-  Crown
-} from 'lucide-react'
+import { Trophy, Users, Coins, TrendingUp, Wallet, Target, ExternalLink, Sparkles, ArrowRight } from 'lucide-react'
 
 export default function Home() {
   const t = useTranslations()
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const {
     gameId,
     gameDetails,
@@ -36,9 +26,12 @@ export default function Home() {
     activeParticipantCount,
     userShares,
     isParticipant,
+    lusdBalance,
     totalPrizePoolAllGames,
+    contractAddress,
+    isLoading
   } = useContractData()
-  const { statusName, isBuying, isVoting } = useGameStatus()
+  const { statusName, isBuying, isVoting, isFinished, votingStage } = useGameStatus()
 
   const prizePool = gameDetails?.prizePool || 0n
   const tokenCap = gameDetails?.tokenCap || 0n
@@ -46,312 +39,234 @@ export default function Home() {
   const progress = tokenCap > 0n ? Number((totalRevenue * 100n) / tokenCap) : 0
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-      </div>
-
+    <div className="min-h-screen bg-black">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 px-4">
-        <div className="container mx-auto max-w-7xl">
-          {/* Main Hero Content */}
-          <div className="text-center mb-16">
-            {/* Live Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500 mb-6">
-              <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-              <span className="text-amber-500 font-semibold text-sm uppercase tracking-wider">
-                {t('home.liveGame')}
+      <section className="relative overflow-hidden border-b border-amber-500/30">
+        {/* Golden Glow Effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(251,191,36,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(251,191,36,0.1),transparent_50%)]" />
+        </div>
+        
+        <div className="container mx-auto px-4 py-16 md:py-24 relative">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            {/* Status Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/50 bg-amber-500/5">
+              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-amber-500 text-sm font-medium tracking-wide">
+                {t(`home.status.${statusName}`)}
               </span>
             </div>
 
             {/* Main Title */}
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="text-white">{t('home.title')}</span>
-              <br />
-              <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
-                {t('home.subtitle')}
-              </span>
-            </h1>
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold">
+                <span className="text-white">{t('home.title')}</span>
+                <br />
+                <span className="text-amber-500">{t('home.subtitle')}</span>
+              </h1>
+              <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+                {t('home.description')}
+              </p>
+            </div>
 
-            {/* Description */}
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-12">
-              {t('home.description')}
-            </p>
+            {/* Key Stats Grid */}
+            <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-3xl mx-auto pt-8">
+              <div className="p-4 md:p-6 border border-slate-800 rounded-2xl bg-slate-950/50 hover:border-amber-500/50 transition-all">
+                <div className="text-xs md:text-sm text-slate-500 mb-2">{t('home.round')}</div>
+                <div className="text-2xl md:text-4xl font-bold text-white">#{gameId?.toString()}</div>
+              </div>
+              <div className="p-4 md:p-6 border border-amber-500/30 rounded-2xl bg-gradient-to-br from-amber-500/10 to-transparent">
+                <div className="text-xs md:text-sm text-slate-500 mb-2">{t('home.prizePool')}</div>
+                <div className="text-2xl md:text-4xl font-bold text-amber-500">{formatLUSD(prizePool)}</div>
+              </div>
+              <div className="p-4 md:p-6 border border-slate-800 rounded-2xl bg-slate-950/50 hover:border-amber-500/50 transition-all">
+                <div className="text-xs md:text-sm text-slate-500 mb-2">{t('home.participants')}</div>
+                <div className="text-2xl md:text-4xl font-bold text-white">{participantCount}</div>
+              </div>
+            </div>
 
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {/* CTA */}
+            <div className="pt-4">
               {!isConnected ? (
-                <ConnectButton />
-              ) : (
-                <>
-                  <Link href="#game">
-                    <Button size="lg" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold px-8 py-6 text-lg">
-                      <Play className="mr-2 h-5 w-5" />
-                      {isBuying ? t('home.buyNow') : isVoting ? t('home.voteNow') : t('home.viewGame')}
-                    </Button>
-                  </Link>
-                  <Link href="/how-it-works">
-                    <Button size="lg" variant="outline" className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10 px-8 py-6 text-lg">
-                      {t('home.learnMore')}
+                <ConnectButton.Custom>
+                  {({ openConnectModal }) => (
+                    <Button 
+                      onClick={openConnectModal}
+                      size="lg" 
+                      className="px-8 py-6 text-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold"
+                    >
+                      {t('common.connectWallet')}
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
-                  </Link>
-                </>
+                  )}
+                </ConnectButton.Custom>
+              ) : (
+                <Link href="#game">
+                  <Button 
+                    size="lg" 
+                    className="px-8 py-6 text-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-bold"
+                  >
+                    {isBuying ? t('home.buyNow') : isVoting ? t('home.voteNow') : t('home.viewGame')}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
               )}
             </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {/* Game Round */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <Trophy className="h-6 w-6 text-amber-500" />
-                </div>
-                <p className="text-gray-400 text-sm mb-1">{t('home.round')}</p>
-                <p className="text-2xl font-bold text-white">#{gameId?.toString()}</p>
-              </CardContent>
-            </Card>
-
-            {/* Prize Pool */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <Coins className="h-6 w-6 text-amber-500" />
-                </div>
-                <p className="text-gray-400 text-sm mb-1">{t('home.prizePool')}</p>
-                <p className="text-2xl font-bold text-amber-500">{formatLUSD(prizePool)}</p>
-              </CardContent>
-            </Card>
-
-            {/* Participants */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <Users className="h-6 w-6 text-amber-500" />
-                </div>
-                <p className="text-gray-400 text-sm mb-1">{t('home.participants')}</p>
-                <p className="text-2xl font-bold text-white">{isVoting ? activeParticipantCount : participantCount}</p>
-              </CardContent>
-            </Card>
-
-            {/* Progress */}
-            <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-500/20 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-amber-500" />
-                </div>
-                <p className="text-gray-400 text-sm mb-1">{t('home.filled')}</p>
-                <p className="text-2xl font-bold text-white">{progress.toFixed(0)}%</p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </section>
 
-      {/* User Status Bar */}
-      {isConnected && isParticipant && (
-        <section className="relative border-y border-amber-500/30 bg-amber-500/5">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-center gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <Crown className="h-4 w-4 text-amber-500" />
-                <span className="text-gray-400">{t('home.shares')}:</span>
-                <span className="text-white font-bold">{userShares.toString()}</span>
+      {/* Progress Bar */}
+      <section className="border-b border-slate-900">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-slate-500">{t('home.filled')}</span>
+            <span className="text-sm text-amber-500 font-bold">{progress.toFixed(1)}%</span>
+          </div>
+          <div className="h-2 bg-slate-900 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-1000"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between mt-2 text-xs text-slate-600">
+            <span>{formatLUSD(totalRevenue)} LUSD</span>
+            <span>{formatLUSD(tokenCap)} LUSD</span>
+          </div>
+        </div>
+      </section>
+
+      {/* User Info Bar */}
+      {isConnected && (
+        <section className="border-b border-slate-900 bg-slate-950/50">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4 text-slate-600" />
+                  <code className="text-slate-400">{formatAddress(address || '')}</code>
+                </div>
+                <div className="h-4 w-px bg-slate-800" />
+                <div className="flex items-center gap-2">
+                  <Coins className="h-4 w-4 text-amber-500" />
+                  <span className="text-white font-medium">{formatLUSD(lusdBalance || 0n)} LUSD</span>
+                </div>
+                {isParticipant && (
+                  <>
+                    <div className="h-4 w-px bg-slate-800" />
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-4 w-4 text-amber-500" />
+                      <span className="text-amber-500 font-medium">{userShares.toString()} {t('home.shares')}</span>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="h-4 w-px bg-white/20" />
-              <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-amber-500" />
-                <span className="text-gray-400">{t('home.gameStatus')}:</span>
-                <span className="text-amber-500 font-bold">{statusName}</span>
-              </div>
+              <a
+                href={`${BLOCK_EXPLORER}/address/${contractAddress}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-slate-500 hover:text-amber-500 transition-colors"
+              >
+                {t('home.viewContract')}
+                <ExternalLink className="h-3 w-3" />
+              </a>
             </div>
           </div>
         </section>
       )}
 
-      {/* Main Game Section */}
-      <section id="game" className="relative py-16 px-4">
-        <div className="container mx-auto max-w-7xl">
-          {/* Section Title */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              {isBuying ? t('home.buyNow') : isVoting ? t('home.voteNow') : t('winners.title')}
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent mx-auto" />
-          </div>
-
-          {/* Main Game Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 mb-16">
-            {/* Main Action Area */}
-            <div className="lg:col-span-2">
-              {isBuying ? (
-                <BuyShares />
-              ) : isVoting ? (
-                <VotingPanel variant="full" />
-              ) : (
-                <WinnersHistory />
-              )}
-            </div>
-
-            {/* Sidebar Stats */}
-            <div className="space-y-6">
-              {/* Live Stats Card */}
-              <Card className="bg-gradient-to-br from-white/5 to-white/10 border-amber-500/30 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-amber-500" />
-                    {t('game.stats.title')}
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400">{t('home.totalPrizeAllGames')}</span>
-                      <span className="text-white font-bold">{formatLUSD(totalPrizePoolAllGames || 0n)}</span>
-                    </div>
-                    <div className="h-px bg-white/10" />
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400">{t('home.currentPrize')}</span>
-                      <span className="text-amber-500 font-bold">{formatLUSD(prizePool)}</span>
-                    </div>
-                    <div className="h-px bg-white/10" />
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400">{t('home.collected')}</span>
-                      <span className="text-white font-bold">{formatLUSD(totalRevenue)}</span>
-                    </div>
-                    <div className="h-px bg-white/10" />
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400">{t('home.winnerPrize')}</span>
-                      <span className="text-amber-500 font-bold">85%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Progress Circle */}
-              <Card className="bg-gradient-to-br from-white/5 to-white/10 border-amber-500/30 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-bold text-white mb-4 text-center">{t('home.gameStatus')}</h3>
-                  <div className="flex justify-center mb-4">
-                    <div className="relative w-40 h-40">
-                      <svg className="w-full h-full transform -rotate-90">
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="70"
-                          stroke="rgba(255,255,255,0.1)"
-                          strokeWidth="12"
-                          fill="none"
-                        />
-                        <circle
-                          cx="80"
-                          cy="80"
-                          r="70"
-                          stroke="url(#goldGradient)"
-                          strokeWidth="12"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeDasharray={`${progress * 4.4} 440`}
-                          className="transition-all duration-1000"
-                        />
-                        <defs>
-                          <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#f59e0b" />
-                            <stop offset="100%" stopColor="#d97706" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-4xl font-bold text-white">{progress.toFixed(0)}%</span>
-                        <span className="text-sm text-gray-400">{t('home.filled')}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <span className="inline-block px-4 py-2 rounded-full bg-amber-500/20 text-amber-500 text-sm font-bold">
-                      {statusName}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Game Progress */}
-          <GameProgress />
+      {/* Main Content */}
+      <section id="game" className="container mx-auto px-4 py-12">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+          <Card className="bg-slate-950 border-slate-800 hover:border-amber-500/50 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className="h-5 w-5 text-amber-500" />
+                <span className="text-xs text-slate-500">{t('home.totalPrizeAllGames')}</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{formatLUSD(totalPrizePoolAllGames || 0n)}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-950 border-amber-500/30 hover:border-amber-500/50 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Trophy className="h-5 w-5 text-amber-500" />
+                <span className="text-xs text-slate-500">{t('home.currentPrize')}</span>
+              </div>
+              <div className="text-2xl font-bold text-amber-500">{formatLUSD(prizePool)}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-950 border-slate-800 hover:border-amber-500/50 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Users className="h-5 w-5 text-amber-500" />
+                <span className="text-xs text-slate-500">
+                  {isVoting ? t('home.activeParticipants') : t('home.participants')}
+                </span>
+              </div>
+              <div className="text-2xl font-bold text-white">
+                {isVoting ? activeParticipantCount : participantCount}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/30 hover:border-amber-500/50 transition-all">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-2">
+                <Target className="h-5 w-5 text-amber-500" />
+                <span className="text-xs text-slate-500">{t('home.winnerPrize')}</span>
+              </div>
+              <div className="text-2xl font-bold text-amber-500">85%</div>
+            </CardContent>
+          </Card>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="relative py-16 px-4 border-t border-white/10">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('home.howItWorks')}</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">{t('howItWorks.subtitle')}</p>
+        {/* Game Area */}
+        <div className="grid lg:grid-cols-3 gap-8 mb-12">
+          <div className="lg:col-span-2 space-y-8">
+            {isBuying ? <BuyShares /> : isVoting ? <VotingPanel variant="full" /> : <WinnersHistory />}
+            <GameProgress />
           </div>
+          <div>
+            <GameStats />
+          </div>
+        </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* How It Works */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3">
+              <Sparkles className="h-7 w-7 text-amber-500" />
+              {t('home.howItWorks')}
+            </h2>
+            <Link href="/how-it-works" className="text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-2">
+              {t('home.learnMore')}
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: Coins, title: t('home.step1Title'), desc: t('home.step1Desc'), num: '01' },
-              { icon: Zap, title: t('home.step2Title'), desc: t('home.step2Desc'), num: '02' },
-              { icon: Users, title: t('home.step3Title'), desc: t('home.step3Desc'), num: '03' },
-              { icon: Trophy, title: t('home.step4Title'), desc: t('home.step4Desc'), num: '04' },
+              { title: t('home.step1Title'), desc: t('home.step1Desc'), num: '01' },
+              { title: t('home.step2Title'), desc: t('home.step2Desc'), num: '02' },
+              { title: t('home.step3Title'), desc: t('home.step3Desc'), num: '03' },
+              { title: t('home.step4Title'), desc: t('home.step4Desc'), num: '04' },
             ].map((step, i) => (
-              <Card key={i} className="bg-white/5 border-white/10 hover:border-amber-500/50 transition-all group">
+              <Card key={i} className="bg-slate-950 border-slate-800 hover:border-amber-500/50 transition-all group">
                 <CardContent className="p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-all">
-                      <step.icon className="h-6 w-6 text-amber-500" />
-                    </div>
-                    <span className="text-4xl font-bold text-white/10 group-hover:text-amber-500/20 transition-all">{step.num}</span>
+                  <div className="text-4xl font-bold text-amber-500/20 group-hover:text-amber-500/40 transition-colors mb-4">
+                    {step.num}
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{step.title}</h3>
-                  <p className="text-gray-400 text-sm">{step.desc}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
+                  <p className="text-sm text-slate-400">{step.desc}</p>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          <div className="text-center">
-            <Link href="/how-it-works">
-              <Button size="lg" variant="outline" className="border-2 border-amber-500 text-amber-500 hover:bg-amber-500/10">
-                {t('home.learnMore')}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
         </div>
-      </section>
 
-      {/* Trust Indicators */}
-      <section className="relative py-16 px-4 bg-white/5">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                <Shield className="h-8 w-8 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">{t('howItWorks.features.decentralized.title')}</h3>
-              <p className="text-gray-400 text-sm">{t('howItWorks.features.decentralized.description')}</p>
-            </div>
-            <div>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                <Zap className="h-8 w-8 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">{t('howItWorks.features.vrf.title')}</h3>
-              <p className="text-gray-400 text-sm">{t('howItWorks.features.vrf.description')}</p>
-            </div>
-            <div>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-amber-500/20 flex items-center justify-center">
-                <Trophy className="h-8 w-8 text-amber-500" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">{t('howItWorks.features.transparent.title')}</h3>
-              <p className="text-gray-400 text-sm">{t('howItWorks.features.transparent.description')}</p>
-            </div>
-          </div>
-        </div>
+        {/* Winner History */}
+        <WinnersHistory />
       </section>
     </div>
   )

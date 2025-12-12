@@ -1,141 +1,79 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { useTranslations } from 'next-intl'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Menu, X, Globe, ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { useAccount, useChainId } from 'wagmi'
+import { useGameStatus } from '@/lib/hooks'
+import { Menu, X } from 'lucide-react'
+import { useState } from 'react'
 
-interface HeaderProps {
-  locale: string
+const GAME_STATUS_CONFIG: Record<number, { label: string; variant: string }> = {
+  0: { label: 'Buying Open', variant: 'badge-success' },
+  1: { label: 'Cap Reached', variant: 'badge-warning' },
+  2: { label: 'Requesting VRF...', variant: 'badge-warning' },
+  3: { label: 'Eliminating...', variant: 'badge-warning' },
+  4: { label: 'Voting (8)', variant: 'badge-info' },
+  5: { label: 'Voting (4)', variant: 'badge-info' },
+  6: { label: 'Final Vote (2)', variant: 'badge-info' },
+  7: { label: 'Finished', variant: 'badge-success' },
 }
 
-export function Header({ locale }: HeaderProps) {
-  const t = useTranslations()
+export function Header() {
+  const { isConnected } = useAccount()
+  const chainId = useChainId()
+  const { status } = useGameStatus()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const isRTL = locale === 'fa'
 
-  const navItems = [
-    { href: '/', label: t('nav.home') },
-    { href: '/how-it-works', label: t('nav.howItWorks') },
-    { href: '/winners', label: t('nav.winners') },
-    { href: '/faq', label: t('nav.faq') },
-  ]
-
-  const toggleLocale = () => {
-    const newLocale = locale === 'fa' ? 'en' : 'fa'
-    document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000`
-    window.location.reload()
-  }
+  const isCorrectNetwork = chainId === 421614 // Arbitrum Sepolia
+  const statusConfig = GAME_STATUS_CONFIG[status] || GAME_STATUS_CONFIG[0]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-700/50 bg-slate-900/80 backdrop-blur-xl">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
-              <span className="text-xl">🏆</span>
-            </div>
-            <span className="text-xl font-bold text-white">
-              {t('common.appName')}
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors rounded-lg hover:bg-slate-800/50"
-            >
-              {t('nav.dashboard')}
-            </Link>
-          </nav>
-
-          {/* Right Side */}
-          <div className="flex items-center gap-3">
-            {/* Language Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleLocale}
-              className="hidden sm:flex"
-            >
-              <Globe className="h-5 w-5" />
-              <span className="sr-only">Toggle language</span>
-            </Button>
-
-            {/* Connect Wallet */}
-            <div className="hidden sm:block">
-              <ConnectButton
-                chainStatus="icon"
-                showBalance={false}
-                accountStatus={{
-                  smallScreen: 'avatar',
-                  largeScreen: 'full',
-                }}
-              />
-            </div>
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </Button>
+    <header className="fixed top-0 right-0 left-[240px] h-16 bg-bg-surface border-b border-border-subtle z-30 lg:left-[240px]">
+      <div className="h-full px-6 flex items-center justify-between">
+        {/* Left: Game Status */}
+        <div className="flex items-center gap-4">
+          <div className={statusConfig.variant}>
+            <span className="status-dot-success" />
+            {statusConfig.label}
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-slate-700/50">
-            <nav className="flex flex-col gap-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="px-4 py-3 text-sm font-medium text-slate-300 hover:text-white transition-colors rounded-lg hover:bg-slate-800/50"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              ))}
-              <Link
-                href="/dashboard"
-                className="px-4 py-3 text-sm font-medium text-amber-500 hover:text-amber-400 transition-colors rounded-lg hover:bg-slate-800/50"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.dashboard')}
-              </Link>
-              <div className="px-4 py-3 flex items-center justify-between">
-                <Button variant="ghost" size="sm" onClick={toggleLocale}>
-                  <Globe className="h-4 w-4 mr-2" />
-                  {locale === 'fa' ? 'English' : 'فارسی'}
-                </Button>
-                <ConnectButton chainStatus="icon" showBalance={false} />
-              </div>
-            </nav>
-          </div>
-        )}
+        {/* Right: Network + Wallet */}
+        <div className="flex items-center gap-3">
+          {/* Network Badge */}
+          {isConnected && (
+            <div className={isCorrectNetwork ? 'badge-success' : 'badge-danger'}>
+              <span className={isCorrectNetwork ? 'status-dot-success' : 'status-dot-danger'} />
+              {isCorrectNetwork ? 'Arbitrum' : 'Wrong Network'}
+            </div>
+          )}
+
+          {/* Connect Wallet */}
+          <ConnectButton
+            chainStatus="none"
+            showBalance={false}
+            accountStatus={{
+              smallScreen: 'avatar',
+              largeScreen: 'full',
+            }}
+          />
+
+          {/* Mobile Menu Button */}
+          <button
+            className="lg:hidden btn-ghost p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
     </header>
   )
 }

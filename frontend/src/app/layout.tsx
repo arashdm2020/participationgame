@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
-import { Web3Provider } from "@/components/providers/Web3Provider";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { ClientProviders } from "@/components/providers/ClientProviders";
 import "vazirmatn/Vazirmatn-font-face.css";
 import "./globals.css";
 
@@ -44,13 +42,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Web3Provider locale={locale}>
-            <Header locale={locale} />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer locale={locale} />
-          </Web3Provider>
+          <ClientProviders locale={locale}>
+            {children}
+          </ClientProviders>
         </NextIntlClientProvider>
       </body>
     </html>

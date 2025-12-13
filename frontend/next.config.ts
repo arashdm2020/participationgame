@@ -9,15 +9,27 @@ const nextConfig: NextConfig = {
   
   // Image optimization
   images: {
-    domains: ['arbiscan.io', 'sepolia.arbiscan.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'arbiscan.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'sepolia.arbiscan.io',
+      },
+    ],
   },
   
   // Webpack configuration for Web3
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
     return config;
   },
+  
+  // External packages that should not be bundled
+  serverExternalPackages: ['thread-stream', 'pino'],
 };
 
 export default withNextIntl(nextConfig);

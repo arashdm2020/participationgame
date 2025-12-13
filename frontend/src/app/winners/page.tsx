@@ -1,7 +1,6 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { WinnersHistory } from '@/components/game/WinnersHistory'
 import { networks } from '@/config/networks'
 import { Trophy } from 'lucide-react'

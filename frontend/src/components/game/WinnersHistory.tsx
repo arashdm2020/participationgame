@@ -7,7 +7,20 @@ import { formatAddress, formatLUSD } from '@/lib/utils'
 import { useContractData, useGameStatus } from '@/lib/hooks'
 import { BLOCK_EXPLORER } from '@/config/wagmi'
 
-export function WinnersHistory() {
+interface Winner {
+  gameId: number
+  address: string
+  prizeAmount: string
+  date: string
+  txHash: string
+}
+
+interface WinnersHistoryProps {
+  winners?: Winner[]
+  blockExplorer?: string
+}
+
+export function WinnersHistory({ winners, blockExplorer }: WinnersHistoryProps = {}) {
   const t = useTranslations('winners')
   const { gameId, gameDetails, gameWinner, isLoading } = useContractData()
   const { isFinished } = useGameStatus()
@@ -16,6 +29,7 @@ export function WinnersHistory() {
   // 85% goes to winner
   const winnerPrize = (prizePool * 85n) / 100n
   const hasWinner = gameWinner && gameWinner !== '0x0000000000000000000000000000000000000000'
+  const explorer = blockExplorer || BLOCK_EXPLORER
 
   if (isLoading) {
     return (
@@ -67,7 +81,7 @@ export function WinnersHistory() {
                       {formatAddress(gameWinner)}
                     </code>
                     <a
-                      href={`${BLOCK_EXPLORER}/address/${gameWinner}`}
+                      href={`${explorer}/address/${gameWinner}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-amber-500 hover:text-amber-400"

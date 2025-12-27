@@ -6,25 +6,24 @@ import { usePathname } from 'next/navigation'
 import { ConnectButton } from '@rainbow-me/rainbowkit'
 import { useAccount, useChainId } from 'wagmi'
 import { useGameStatus } from '@/lib/hooks'
-import { Menu, X, User } from 'lucide-react'
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Home' },
-  { href: '/buy', label: 'Buy Shares' },
-  { href: '/vote', label: 'Voting' },
+  { href: '/', label: 'Dashboard' },
+  { href: '/vote', label: 'Vote' },
   { href: '/winners', label: 'Winners' },
-  { href: '/how-it-works', label: 'How It Works' },
+  { href: '/stats', label: 'Position' },
+  { href: '/how-it-works', label: 'Rules' },
 ]
 
-const GAME_STATUS_CONFIG: Record<number, { label: string; variant: string }> = {
-  0: { label: 'Buying Open', variant: 'badge-success' },
-  1: { label: 'Cap Reached', variant: 'badge-warning' },
-  2: { label: 'VRF Pending', variant: 'badge-warning' },
-  3: { label: 'Eliminating', variant: 'badge-warning' },
-  4: { label: 'Voting (8)', variant: 'badge-info' },
-  5: { label: 'Voting (4)', variant: 'badge-info' },
-  6: { label: 'Final Vote', variant: 'badge-info' },
-  7: { label: 'Finished', variant: 'badge-success' },
+const GAME_PHASE: Record<number, string> = {
+  0: 'OPEN',
+  1: 'CAP',
+  2: 'VRF',
+  3: 'ELIM',
+  4: 'VOTE·8',
+  5: 'VOTE·4',
+  6: 'VOTE·2',
+  7: 'END',
 }
 
 export function Navbar() {
@@ -35,88 +34,94 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const isCorrectNetwork = chainId === 421614
-  const statusConfig = GAME_STATUS_CONFIG[status] || GAME_STATUS_CONFIG[0]
+  const phase = GAME_PHASE[status] || 'OPEN'
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-bg-surface border-b border-border-subtle">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex h-16 items-center justify-between">
-          {/* Left: Logo + Nav */}
-          <div className="flex items-center gap-8">
-            {/* Logo */}
+    <header className="sticky top-0 z-50 w-full bg-base border-b border-white-ghost">
+      <div className="max-w-[1200px] mx-auto px-4 lg:px-6">
+        <div className="flex h-14 items-center justify-between">
+          
+          {/* Left: Logo + Phase */}
+          <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-primary to-emerald-600 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">P</span>
-              </div>
-              <span className="font-semibold text-text-primary hidden sm:block">
+              <span className="text-gold font-mono text-lg tracking-tight">P</span>
+              <span className="text-white-primary text-body font-medium hidden sm:block">
                 Participation
               </span>
             </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-1">
-              {NAV_ITEMS.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`px-3 py-2 rounded-lg text-body-md transition-colors ${
-                      isActive
-                        ? 'text-accent-primary bg-accent-primary-muted'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                )
-              })}
-            </nav>
+            
+            {/* Phase Indicator */}
+            <div className="indicator-live text-caption">
+              {phase}
+            </div>
           </div>
 
-          {/* Right: Status + Network + Wallet + Panel */}
-          <div className="flex items-center gap-3">
-            {/* Game Status Pill */}
-            <div className={`hidden sm:flex ${statusConfig.variant}`}>
-              <span className="status-dot-success" />
-              {statusConfig.label}
-            </div>
+          {/* Center: Navigation */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {NAV_ITEMS.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-4 py-2 text-body-sm transition-colors duration-fast ${
+                    isActive
+                      ? 'text-gold'
+                      : 'text-white-tertiary hover:text-white-primary'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
+          </nav>
 
-            {/* Network Badge */}
+          {/* Right: Network + Wallet */}
+          <div className="flex items-center gap-3">
+            {/* Network Status */}
             {isConnected && (
-              <div className={`hidden md:flex ${isCorrectNetwork ? 'badge-success' : 'badge-danger'}`}>
-                <span className={isCorrectNetwork ? 'status-dot-success' : 'status-dot-danger'} />
-                {isCorrectNetwork ? 'Arbitrum' : 'Wrong Network'}
+              <div className={`hidden md:flex text-caption font-mono ${
+                isCorrectNetwork ? 'text-white-secondary' : 'text-gold'
+              }`}>
+                {isCorrectNetwork ? 'ARB' : 'SWITCH'}
               </div>
             )}
 
             {/* Wallet */}
-            <ConnectButton
-              chainStatus="none"
-              showBalance={false}
-              accountStatus={{
-                smallScreen: 'avatar',
-                largeScreen: 'full',
+            <ConnectButton.Custom>
+              {({ account, chain, openConnectModal, openAccountModal, mounted }) => {
+                const connected = mounted && account && chain
+                
+                return (
+                  <button
+                    onClick={connected ? openAccountModal : openConnectModal}
+                    className={`btn btn-sm ${connected ? 'btn-outline' : 'btn-gold'}`}
+                  >
+                    {connected ? (
+                      <span className="font-mono text-caption">
+                        {account.displayName}
+                      </span>
+                    ) : (
+                      'Connect'
+                    )}
+                  </button>
+                )
               }}
-            />
+            </ConnectButton.Custom>
 
-            {/* Panel Link (when connected) */}
-            {isConnected && (
-              <Link
-                href="/panel"
-                className="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors"
-                title="My Panel"
-              >
-                <User className="w-5 h-5" />
-              </Link>
-            )}
-
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Toggle */}
             <button
-              className="lg:hidden p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-hover"
+              className="lg:hidden p-2 text-white-secondary hover:text-white-primary transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+                {mobileMenuOpen ? (
+                  <path d="M5 5L15 15M15 5L5 15" />
+                ) : (
+                  <path d="M3 6H17M3 10H17M3 14H17" />
+                )}
+              </svg>
             </button>
           </div>
         </div>
@@ -124,8 +129,8 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-border-subtle bg-bg-surface">
-          <nav className="px-4 py-4 space-y-1">
+        <div className="lg:hidden border-t border-white-ghost bg-surface animate-fade-in">
+          <nav className="px-4 py-3">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -133,34 +138,17 @@ export function Navbar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-lg text-body-md transition-colors ${
+                  className={`block py-3 text-body border-b border-white-ghost last:border-0 transition-colors ${
                     isActive
-                      ? 'text-accent-primary bg-accent-primary-muted'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover'
+                      ? 'text-gold'
+                      : 'text-white-secondary'
                   }`}
                 >
                   {item.label}
                 </Link>
               )
             })}
-            {isConnected && (
-              <Link
-                href="/panel"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 rounded-lg text-body-md text-text-secondary hover:text-text-primary hover:bg-bg-hover"
-              >
-                My Panel
-              </Link>
-            )}
           </nav>
-          
-          {/* Mobile Status */}
-          <div className="px-4 pb-4 flex items-center gap-2">
-            <div className={statusConfig.variant}>
-              <span className="status-dot-success" />
-              {statusConfig.label}
-            </div>
-          </div>
         </div>
       )}
     </header>

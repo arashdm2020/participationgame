@@ -19,9 +19,9 @@ export const networks: Record<'testnet' | 'mainnet', NetworkConfig> = {
     rpcUrl: 'https://sepolia-rollup.arbitrum.io/rpc',
     blockExplorer: 'https://sepolia.arbiscan.io',
     // Deployed contract addresses on Arbitrum Sepolia
-    contractAddress: '0xd98b85650Fa30d849217e540A563D26Eb21f8E46',
-    lusdAddress: '0x8d13F248f3D7be222FF5E9743E392C76948C1028',
-    vrfCoordinator: '0x50d47e4142598E3411aA864e08a44284e471AC6f',
+    contractAddress: '0xF4Abd3F1eF0298fd3f02908114Fd139b6750d6c6',
+    lusdAddress: '0xCc4Ad4856222044Af187E7275820BC4367A0FDdF',
+    vrfCoordinator: '0x5CE8D5A2BC84beb22a398CCA51996F7930313D61',
     isTestnet: true,
   },
   mainnet: {

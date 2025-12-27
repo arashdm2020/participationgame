@@ -6,8 +6,8 @@ import { useEffect } from 'react'
 import { PARTICIPATION_GAME_ABI, ERC20_ABI, GameStatus } from '@/config/contracts'
 
 // Contract addresses - Arbitrum Sepolia Testnet
-export const GAME_CONTRACT = (process.env.NEXT_PUBLIC_GAME_CONTRACT || '0xd98b85650Fa30d849217e540A563D26Eb21f8E46') as `0x${string}`
-export const LUSD_CONTRACT = (process.env.NEXT_PUBLIC_LUSD_CONTRACT || '0x8d13F248f3D7be222FF5E9743E392C76948C1028') as `0x${string}`
+export const GAME_CONTRACT = (process.env.NEXT_PUBLIC_GAME_CONTRACT || '0xF4Abd3F1eF0298fd3f02908114Fd139b6750d6c6') as `0x${string}`
+export const LUSD_CONTRACT = (process.env.NEXT_PUBLIC_LUSD_CONTRACT || '0xCc4Ad4856222044Af187E7275820BC4367A0FDdF') as `0x${string}`
 
 export interface GameDetails {
   tokenCap: bigint

@@ -92,7 +92,7 @@ contract ParticipationGameTest is Test {
         vrfCoordinator = new MockVRFCoordinator();
 
         // Deploy implementation
-        implementation = new ParticipationGameTestHelper(address(vrfCoordinator));
+        implementation = new ParticipationGameTestHelper();
 
         // Prepare VRF config
         ParticipationGame.VRFConfig memory vrfConfig = ParticipationGame.VRFConfig({

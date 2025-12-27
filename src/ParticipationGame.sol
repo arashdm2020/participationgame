@@ -8,8 +8,8 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Pau
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {VRFConsumerBaseV2} from "@chainlink/v0.8/vrf/VRFConsumerBaseV2.sol";
-import {VRFCoordinatorV2Interface} from "@chainlink/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
+import {IVRFCoordinatorV2Plus} from "@chainlink/v0.8/vrf/dev/interfaces/IVRFCoordinatorV2Plus.sol";
+import {VRFV2PlusClient} from "@chainlink/v0.8/vrf/dev/libraries/VRFV2PlusClient.sol";
 
 /**
  * @title ParticipationGame
@@ -18,7 +18,7 @@ import {VRFCoordinatorV2Interface} from "@chainlink/v0.8/vrf/interfaces/VRFCoord
  */
 contract ParticipationGame is 
     Initializable, UUPSUpgradeable, OwnableUpgradeable, 
-    PausableUpgradeable, ReentrancyGuard, VRFConsumerBaseV2
+    PausableUpgradeable, ReentrancyGuard
 {
     using SafeERC20 for IERC20;
 
@@ -67,7 +67,7 @@ contract ParticipationGame is
 
     struct VRFConfig {
         address coordinator;
-        uint64 subscriptionId;
+        uint256 subscriptionId;
         uint32 callbackGasLimit;
         bytes32 keyHash;
         uint16 requestConfirmations;
@@ -127,7 +127,7 @@ contract ParticipationGame is
     }
 
     // ========== CONSTRUCTOR & INIT ==========
-    constructor(address _vrfCoordinator) VRFConsumerBaseV2(_vrfCoordinator) {
+    constructor() {
         _disableInitializers();
     }
 
@@ -296,12 +296,15 @@ contract ParticipationGame is
         GameStatus oldStatus = game.status;
         game.status = GameStatus.VRF_Request;
 
-        uint256 requestId = VRFCoordinatorV2Interface(vrfConfig.coordinator).requestRandomWords(
-            vrfConfig.keyHash,
-            vrfConfig.subscriptionId,
-            vrfConfig.requestConfirmations,
-            vrfConfig.callbackGasLimit,
-            1
+        uint256 requestId = IVRFCoordinatorV2Plus(vrfConfig.coordinator).requestRandomWords(
+            VRFV2PlusClient.RandomWordsRequest({
+                keyHash: vrfConfig.keyHash,
+                subId: vrfConfig.subscriptionId,
+                requestConfirmations: vrfConfig.requestConfirmations,
+                callbackGasLimit: vrfConfig.callbackGasLimit,
+                numWords: 1,
+                extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({nativePayment: false}))
+            })
         );
 
         requestIdToGame[requestId] = gameId;
@@ -309,7 +312,12 @@ contract ParticipationGame is
         emit RandomnessRequested(gameId, requestId);
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] memory randomWords) internal override {
+    function rawFulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) external {
+        if (msg.sender != vrfConfig.coordinator) revert InvalidOperator();
+        _fulfillRandomWords(requestId, randomWords);
+    }
+
+    function _fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal {
         uint256 gameId = requestIdToGame[requestId];
         if (gameId == 0) revert InvalidRequestId();
 

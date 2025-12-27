@@ -8,13 +8,13 @@ import {ParticipationGame} from "../../src/ParticipationGame.sol";
  * @notice Test helper that exposes internal VRF functions for testing
  */
 contract ParticipationGameTestHelper is ParticipationGame {
-    constructor(address _vrfCoordinator) ParticipationGame(_vrfCoordinator) {}
+    constructor() ParticipationGame() {}
 
     /**
      * @notice Expose rawFulfillRandomWords for testing
      * @dev This function should NEVER be deployed to production
      */
-    function fulfillRandomWordsTest(uint256 requestId, uint256[] memory randomWords) external {
-        fulfillRandomWords(requestId, randomWords);
+    function fulfillRandomWordsTest(uint256 requestId, uint256[] calldata randomWords) external {
+        _fulfillRandomWords(requestId, randomWords);
     }
 }

@@ -11,9 +11,9 @@ import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.s
  * @dev Run with: forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --verify
  */
 contract DeployParticipationGame is Script {
-    // Arbitrum Sepolia VRF Configuration
-    address constant ARBITRUM_SEPOLIA_VRF_COORDINATOR = 0x50d47e4142598E3411aA864e08a44284e471AC6f;
-    bytes32 constant ARBITRUM_SEPOLIA_KEY_HASH = 0x027f94ff1465b3525f9fc03e9ff7d6d2c0953482246dd6ae07570c45d6631414;
+    // Arbitrum Sepolia VRF Configuration (v2.5)
+    address constant ARBITRUM_SEPOLIA_VRF_COORDINATOR = 0x5CE8D5A2BC84beb22a398CCA51996F7930313D61;
+    bytes32 constant ARBITRUM_SEPOLIA_KEY_HASH = 0x1770bdc7eec7771f7ba4ffd640f34260d7f095b79c92d34a5b2551d6f6cfd2be;
     
     // Arbitrum Mainnet VRF Configuration (for reference)
     // address constant ARBITRUM_MAINNET_VRF_COORDINATOR = 0x41034678D6C633D8a95c75e1138A360a28bA15d1;
@@ -24,9 +24,7 @@ contract DeployParticipationGame is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address lusdToken = vm.envAddress("LUSD_TOKEN_ADDRESS");
         address platformFeeWallet = vm.envAddress("PLATFORM_FEE_WALLET");
-        uint256 vrfSubIdRaw = vm.envUint("VRF_SUBSCRIPTION_ID");
-        require(vrfSubIdRaw <= type(uint64).max, "VRF_SUBSCRIPTION_ID too large for uint64");
-        uint64 vrfSubscriptionId = uint64(vrfSubIdRaw);
+        uint256 vrfSubscriptionId = vm.envUint("VRF_SUBSCRIPTION_ID");
         
         // Get deployer address from private key
         address deployer = vm.addr(deployerPrivateKey);
@@ -37,7 +35,7 @@ contract DeployParticipationGame is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Deploy implementation
-        ParticipationGame implementation = new ParticipationGame(ARBITRUM_SEPOLIA_VRF_COORDINATOR);
+        ParticipationGame implementation = new ParticipationGame();
         console2.log("Implementation deployed at:", address(implementation));
 
         // Prepare VRF config
@@ -95,7 +93,7 @@ contract UpgradeParticipationGame is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // Deploy new implementation
-        ParticipationGame newImplementation = new ParticipationGame(vrfCoordinator);
+        ParticipationGame newImplementation = new ParticipationGame();
         console2.log("New implementation deployed at:", address(newImplementation));
 
         // Upgrade proxy

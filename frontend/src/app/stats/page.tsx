@@ -1,18 +1,9 @@
 'use client'
 
-import { MainLayout } from '@/components/layout/MainLayout'
+import { NavbarLayout } from '@/components/layout/NavbarLayout'
 import { useAccount } from 'wagmi'
 import { useContractData, useGameStatus } from '@/lib/hooks'
 import { formatEther } from 'viem'
-import { 
-  Wallet, 
-  Coins, 
-  Trophy, 
-  Users, 
-  CheckCircle,
-  Clock,
-  ArrowRight
-} from 'lucide-react'
 import Link from 'next/link'
 
 export default function StatsPage() {
@@ -27,7 +18,7 @@ export default function StatsPage() {
   } = useContractData()
   const { statusName, isVoting, isBuying } = useGameStatus()
 
-  const sharesFormatted = userShares.toString()
+  const sharesFormatted = Number(formatEther(userShares)).toLocaleString()
   const balanceFormatted = lusdBalance 
     ? Number(formatEther(lusdBalance)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -37,163 +28,165 @@ export default function StatsPage() {
 
   if (!isConnected) {
     return (
-      <MainLayout>
-        <div className="max-w-lg mx-auto">
-          <div className="card text-center py-12">
-            <Wallet className="w-16 h-16 text-text-tertiary mx-auto mb-4" />
-            <h2 className="text-heading-2 text-text-primary mb-2">Connect Wallet</h2>
-            <p className="text-body-md text-text-secondary">
-              Please connect your wallet to view your stats.
+      <NavbarLayout>
+        <div className="max-w-[600px] mx-auto pt-20">
+          <div className="panel p-8 text-center">
+            <div className="text-h2 text-white-primary mb-3">Connect Wallet</div>
+            <p className="text-body text-white-secondary">
+              Connect your wallet to view your position.
             </p>
           </div>
         </div>
-      </MainLayout>
+      </NavbarLayout>
     )
   }
 
   return (
-    <MainLayout>
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-heading-1 text-text-primary mb-2">My Stats</h1>
-        <p className="text-body-md text-text-secondary">
-          Your participation overview and history
-        </p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="card">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-accent-primary-muted">
-              <Coins className="w-5 h-5 text-accent-primary" />
-            </div>
-            <span className="text-body-sm text-text-secondary">My Shares</span>
-          </div>
-          <div className="text-display-2 font-mono text-text-primary">{sharesFormatted}</div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-status-warning-bg">
-              <Wallet className="w-5 h-5 text-status-warning" />
-            </div>
-            <span className="text-body-sm text-text-secondary">LUSD Balance</span>
-          </div>
-          <div className="text-heading-2 font-mono text-text-primary">{balanceFormatted}</div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-status-info-bg">
-              <Users className="w-5 h-5 text-status-info" />
-            </div>
-            <span className="text-body-sm text-text-secondary">Status</span>
-          </div>
-          <div className="text-heading-3 text-text-primary">
-            {isActiveParticipant ? 'Active Voter' : isParticipant ? 'Participant' : 'Not Joined'}
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 rounded-lg bg-status-success-bg">
-              <Trophy className="w-5 h-5 text-status-success" />
-            </div>
-            <span className="text-body-sm text-text-secondary">Total Wins</span>
-          </div>
-          <div className="text-display-2 font-mono text-text-primary">0</div>
-        </div>
-      </div>
-
-      {/* Current Game Status */}
-      <div className="card mb-8">
-        <h3 className="text-heading-3 text-text-primary mb-4">Current Game</h3>
+    <NavbarLayout>
+      <div className="max-w-[800px] mx-auto">
         
-        <div className="p-4 rounded-lg bg-bg-hover mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-body-md text-text-secondary">Game</span>
-            <span className="text-heading-3 text-text-primary">#{gameId?.toString()}</span>
+        {/* Header */}
+        <header className="mb-8 pt-8">
+          <div className="label mb-2">Your Position</div>
+          <h1 className="text-h1 text-white-primary">Game #{gameId?.toString() || '—'}</h1>
+        </header>
+
+        {/* Main Stats */}
+        <section className="grid grid-cols-2 gap-px bg-white-ghost mb-px">
+          <div className="bg-surface p-6">
+            <div className="label mb-2">Shares Owned</div>
+            <div className="value-display text-display-lg value-gold">{sharesFormatted}</div>
           </div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-body-md text-text-secondary">Status</span>
-            <span className="badge-info">{statusName}</span>
+          <div className="bg-surface p-6">
+            <div className="label mb-2">Share Value</div>
+            <div className="value-display text-display-lg">{sharesFormatted} <span className="text-white-tertiary text-h3">LUSD</span></div>
           </div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-body-md text-text-secondary">Your Shares</span>
-            <span className="font-mono text-text-primary">{sharesFormatted}</span>
+        </section>
+
+        {/* Status */}
+        <section className="grid grid-cols-3 gap-px bg-white-ghost mb-8">
+          <div className="bg-surface p-5">
+            <div className="label mb-2">Wallet Balance</div>
+            <div className="font-mono text-mono-lg text-white-primary">{balanceFormatted}</div>
+            <div className="text-caption text-white-tertiary">LUSD</div>
           </div>
-          {isVoting && (
-            <div className="flex items-center justify-between">
-              <span className="text-body-md text-text-secondary">Vote Status</span>
-              {hasVoted ? (
-                <span className="badge-success">
-                  <CheckCircle className="w-3 h-3" />
-                  Voted
-                </span>
-              ) : isActiveParticipant ? (
-                <span className="badge-warning">
-                  <Clock className="w-3 h-3" />
-                  Pending
-                </span>
+          <div className="bg-surface p-5">
+            <div className="label mb-2">Game Phase</div>
+            <div className="text-h3 text-white-primary">{statusName}</div>
+          </div>
+          <div className="bg-surface p-5">
+            <div className="label mb-2">Participation</div>
+            <div className="text-h3">
+              {isActiveParticipant ? (
+                <span className="text-gold">Active Voter</span>
+              ) : isParticipant ? (
+                <span className="text-white-primary">Joined</span>
               ) : (
-                <span className="badge-neutral">Not Eligible</span>
+                <span className="text-white-tertiary">Not joined</span>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        </section>
 
-        {/* Action Button */}
-        {isBuying && (
-          <Link href="/buy" className="btn-primary w-full">
-            Buy More Shares
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        )}
+        {/* Action Required */}
         {isVoting && isActiveParticipant && !hasVoted && (
-          <Link href="/vote" className="btn-primary w-full">
-            Cast Your Vote
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          <section className="mb-8">
+            <div className="panel-gold p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="label label-gold mb-1">Action Required</div>
+                  <div className="text-h3 text-white-primary">Cast your vote</div>
+                  <p className="text-body-sm text-white-secondary mt-1">
+                    You are an active participant. Your vote matters.
+                  </p>
+                </div>
+                <Link href="/vote" className="btn btn-gold">
+                  Vote Now
+                </Link>
+              </div>
+            </div>
+          </section>
         )}
-      </div>
 
-      {/* Participation History */}
-      <div className="card">
-        <h3 className="text-heading-3 text-text-primary mb-4">Participation History</h3>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border-subtle">
-                <th className="text-left py-3 px-4 text-body-sm text-text-secondary font-medium">Game</th>
-                <th className="text-left py-3 px-4 text-body-sm text-text-secondary font-medium">Shares</th>
-                <th className="text-left py-3 px-4 text-body-sm text-text-secondary font-medium">Result</th>
-                <th className="text-right py-3 px-4 text-body-sm text-text-secondary font-medium">Prize</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isParticipant && (
-                <tr className="border-b border-border-subtle">
-                  <td className="py-3 px-4 font-mono text-text-primary">#{gameId?.toString()}</td>
-                  <td className="py-3 px-4 font-mono text-text-primary">{sharesFormatted}</td>
-                  <td className="py-3 px-4">
-                    <span className="badge-info">In Progress</span>
-                  </td>
-                  <td className="py-3 px-4 text-right text-text-tertiary">-</td>
-                </tr>
-              )}
-              {!isParticipant && (
+        {/* Next Action */}
+        <section className="mb-8">
+          <div className="label mb-4">Next Action</div>
+          <div className="panel p-6">
+            {isBuying ? (
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-h4 text-white-primary mb-1">Buy more shares</div>
+                  <p className="text-body-sm text-white-secondary">
+                    Increase your chances by acquiring more shares.
+                  </p>
+                </div>
+                <Link href="/" className="btn btn-outline">
+                  Buy Shares
+                </Link>
+              </div>
+            ) : isVoting ? (
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-h4 text-white-primary mb-1">Voting in progress</div>
+                  <p className="text-body-sm text-white-secondary">
+                    {isActiveParticipant 
+                      ? hasVoted 
+                        ? 'You have voted. Waiting for results.' 
+                        : 'Cast your vote before the deadline.'
+                      : 'You are not in this voting round.'}
+                  </p>
+                </div>
+                {isActiveParticipant && !hasVoted && (
+                  <Link href="/vote" className="btn btn-gold">
+                    Vote
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div>
+                <div className="text-h4 text-white-primary mb-1">Wait for next round</div>
+                <p className="text-body-sm text-white-secondary">
+                  The current game is in progress. Check back later.
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* History */}
+        <section>
+          <div className="label mb-4">History</div>
+          <div className="panel">
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-text-tertiary">
-                    No participation history yet
-                  </td>
+                  <th>Game</th>
+                  <th>Shares</th>
+                  <th>Result</th>
+                  <th className="text-right">Prize</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {isParticipant ? (
+                  <tr>
+                    <td className="font-mono text-white-primary">#{gameId?.toString()}</td>
+                    <td className="font-mono">{sharesFormatted}</td>
+                    <td><span className="indicator indicator-gold">In Progress</span></td>
+                    <td className="text-right text-white-tertiary">—</td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center text-white-tertiary py-8">
+                      No participation history
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
       </div>
-    </MainLayout>
+    </NavbarLayout>
   )
 }

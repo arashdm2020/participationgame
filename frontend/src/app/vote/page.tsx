@@ -6,16 +6,6 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagm
 import { useContractData, useGameStatus } from '@/lib/hooks'
 import { PARTICIPATION_GAME_ABI } from '@/config/contracts'
 import { useQueryClient } from '@tanstack/react-query'
-import { 
-  ThumbsUp, 
-  ThumbsDown, 
-  Clock, 
-  Loader2, 
-  CheckCircle,
-  Users,
-  AlertCircle,
-  Wallet
-} from 'lucide-react'
 import Link from 'next/link'
 
 export default function VotePage() {
@@ -47,13 +37,12 @@ export default function VotePage() {
   const stopVotes = Number(voteTallies?.[1] || 0n)
   const totalVotes = continueVotes + stopVotes
   const continuePercent = totalVotes > 0 ? (continueVotes / totalVotes) * 100 : 50
-  const stopPercent = totalVotes > 0 ? (stopVotes / totalVotes) * 100 : 50
 
   const votingDeadline = Number(gameDetails?.votingDeadline || 0n)
   const hasVotedInStage = userParticipant?.hasVotedInCurrentStage || false
   const userIsActiveParticipant = activeParticipants?.includes(address as `0x${string}`) || false
+  const userVotedContinue = userParticipant?.defaultVote || false
 
-  // Countdown timer
   useEffect(() => {
     const updateTimer = () => {
       const now = Math.floor(Date.now() / 1000)
@@ -87,6 +76,7 @@ export default function VotePage() {
     })
   }
 
+  const isProcessing = isPending || isWaitingVote
   const isUrgent = votingDeadline - Math.floor(Date.now() / 1000) < 3600
   const isCritical = votingDeadline - Math.floor(Date.now() / 1000) < 600
 
@@ -94,15 +84,14 @@ export default function VotePage() {
   if (!isVoting) {
     return (
       <NavbarLayout>
-        <div className="max-w-lg mx-auto">
-          <div className="card text-center py-12">
-            <AlertCircle className="w-16 h-16 text-status-warning mx-auto mb-4" />
-            <h2 className="text-heading-2 text-text-primary mb-2">No Active Voting</h2>
-            <p className="text-body-md text-text-secondary mb-6">
-              Voting is not currently active. The game must reach the cap and complete elimination first.
+        <div className="max-w-[600px] mx-auto pt-20">
+          <div className="panel p-8 text-center">
+            <div className="text-gold text-h2 mb-3">No Active Voting</div>
+            <p className="text-body text-white-secondary mb-6">
+              Voting is not active. The game must reach the cap and complete selection first.
             </p>
-            <Link href="/" className="btn-secondary">
-              View Game Status
+            <Link href="/" className="btn btn-outline">
+              View Dashboard
             </Link>
           </div>
         </div>
@@ -114,12 +103,11 @@ export default function VotePage() {
   if (!isConnected) {
     return (
       <NavbarLayout>
-        <div className="max-w-lg mx-auto">
-          <div className="card text-center py-12">
-            <Wallet className="w-16 h-16 text-text-tertiary mx-auto mb-4" />
-            <h2 className="text-heading-2 text-text-primary mb-2">Connect Wallet</h2>
-            <p className="text-body-md text-text-secondary">
-              Please connect your wallet to view voting status.
+        <div className="max-w-[600px] mx-auto pt-20">
+          <div className="panel p-8 text-center">
+            <div className="text-h2 text-white-primary mb-3">Connect Wallet</div>
+            <p className="text-body text-white-secondary">
+              Connect your wallet to view voting status.
             </p>
           </div>
         </div>
@@ -129,157 +117,131 @@ export default function VotePage() {
 
   return (
     <NavbarLayout>
-      <div className="max-w-3xl mx-auto">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-heading-1 text-text-primary mb-2">Voting Round</h1>
-          <p className="text-body-md text-text-secondary">
-            Game #{gameId?.toString()} • Stage {votingStage}
-          </p>
-        </div>
-
-        {/* Countdown Timer */}
-        <div className="card-highlighted mb-8 text-center py-8">
-          <div className="text-body-sm text-text-secondary mb-2">Time Remaining</div>
-          <div className={`text-display-1 font-mono ${
-            isCritical ? 'text-status-danger animate-countdown-pulse' : 
-            isUrgent ? 'text-status-warning' : 'text-text-primary'
-          }`}>
-            {timeRemaining}
+      <div className="max-w-[700px] mx-auto">
+        
+        {/* Header */}
+        <header className="mb-8 pt-8">
+          <div className="flex items-baseline justify-between">
+            <div>
+              <div className="label mb-2">Voting Round {votingStage}</div>
+              <h1 className="text-h1 text-white-primary">Game #{gameId?.toString()}</h1>
+            </div>
+            <div className="text-right">
+              <div className="label mb-1">Time Left</div>
+              <div className={`font-mono text-display-md ${
+                isCritical ? 'text-gold animate-tick' : 
+                isUrgent ? 'text-gold' : 'text-white-primary'
+              }`}>
+                {timeRemaining}
+              </div>
+            </div>
           </div>
-          {isCritical && (
-            <div className="mt-2 text-body-sm text-status-danger">
-              Hurry! Voting ends soon
-            </div>
-          )}
-        </div>
+        </header>
 
-        {/* Vote Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Continue Card */}
-          <div className={`card p-6 ${hasVotedInStage && userParticipant?.defaultVote ? 'ring-2 ring-status-success' : ''}`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-status-success-bg">
-                <ThumbsUp className="w-6 h-6 text-status-success" />
-              </div>
-              <div>
-                <h3 className="text-heading-2 text-text-primary">Continue</h3>
-                <p className="text-body-sm text-text-secondary">Eliminate half, continue playing</p>
-              </div>
+        {/* Vote Status Bar */}
+        <section className="mb-8">
+          <div className="panel p-6">
+            <div className="flex justify-between text-caption mb-3">
+              <span className="text-gold">CONTINUE ({continueVotes})</span>
+              <span className="text-white-secondary">STOP ({stopVotes})</span>
             </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between text-body-sm mb-2">
-                <span className="text-text-secondary">Votes</span>
-                <span className="text-status-success font-bold">{continueVotes}</span>
-              </div>
-              <div className="progress-bar h-3">
-                <div 
-                  className="progress-fill bg-status-success"
-                  style={{ width: `${continuePercent}%` }}
-                />
-              </div>
+            <div className="h-2 bg-white-ghost flex">
+              <div 
+                className="h-full bg-gold transition-all duration-500"
+                style={{ width: `${continuePercent}%` }}
+              />
             </div>
+            <div className="flex justify-between text-caption mt-2 text-white-tertiary">
+              <span>Eliminate half, continue game</span>
+              <span>End game, pick winner now</span>
+            </div>
+          </div>
+        </section>
 
-            {userIsActiveParticipant && !hasVotedInStage && (
+        {/* Vote Actions */}
+        {userIsActiveParticipant && !hasVotedInStage ? (
+          <section className="mb-8">
+            <div className="grid grid-cols-2 gap-px bg-white-ghost">
               <button
                 onClick={() => handleVote(true)}
-                disabled={isPending || isWaitingVote}
-                className="btn-success w-full"
+                disabled={isProcessing}
+                className="bg-surface p-8 hover:bg-elevated transition-colors text-center group disabled:opacity-50"
               >
-                {(isPending || isWaitingVote) && <Loader2 className="w-4 h-4 animate-spin" />}
-                Vote Continue
+                <div className="text-gold text-h2 mb-2 group-hover:scale-105 transition-transform">Continue</div>
+                <div className="text-body-sm text-white-tertiary">Eliminate half, keep playing</div>
               </button>
-            )}
-
-            {hasVotedInStage && userParticipant?.defaultVote && (
-              <div className="flex items-center justify-center gap-2 text-status-success">
-                <CheckCircle className="w-5 h-5" />
-                <span>You voted Continue</span>
-              </div>
-            )}
-          </div>
-
-          {/* Stop Card */}
-          <div className={`card p-6 ${hasVotedInStage && !userParticipant?.defaultVote ? 'ring-2 ring-status-danger' : ''}`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-full bg-status-danger-bg">
-                <ThumbsDown className="w-6 h-6 text-status-danger" />
-              </div>
-              <div>
-                <h3 className="text-heading-2 text-text-primary">Stop</h3>
-                <p className="text-body-sm text-text-secondary">End game, select winner now</p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between text-body-sm mb-2">
-                <span className="text-text-secondary">Votes</span>
-                <span className="text-status-danger font-bold">{stopVotes}</span>
-              </div>
-              <div className="progress-bar h-3">
-                <div 
-                  className="progress-fill"
-                  style={{ width: `${stopPercent}%`, background: 'var(--gradient-danger)' }}
-                />
-              </div>
-            </div>
-
-            {userIsActiveParticipant && !hasVotedInStage && (
               <button
                 onClick={() => handleVote(false)}
-                disabled={isPending || isWaitingVote}
-                className="btn-danger w-full"
+                disabled={isProcessing}
+                className="bg-surface p-8 hover:bg-elevated transition-colors text-center group disabled:opacity-50"
               >
-                {(isPending || isWaitingVote) && <Loader2 className="w-4 h-4 animate-spin" />}
-                Vote Stop
+                <div className="text-white-primary text-h2 mb-2 group-hover:scale-105 transition-transform">Stop</div>
+                <div className="text-body-sm text-white-tertiary">End game, select winner</div>
               </button>
+            </div>
+            {isProcessing && (
+              <div className="text-center text-caption text-gold mt-4 animate-pulse-gold">
+                Processing vote...
+              </div>
             )}
+          </section>
+        ) : hasVotedInStage ? (
+          <section className="mb-8">
+            <div className="panel-gold p-6 text-center">
+              <div className="label label-gold mb-2">Vote Submitted</div>
+              <div className="text-h3 text-white-primary">
+                You voted <span className={userVotedContinue ? 'text-gold' : 'text-white-primary'}>
+                  {userVotedContinue ? 'Continue' : 'Stop'}
+                </span>
+              </div>
+              <p className="text-body-sm text-white-secondary mt-2">
+                Waiting for other participants...
+              </p>
+            </div>
+          </section>
+        ) : (
+          <section className="mb-8">
+            <div className="panel p-6 text-center">
+              <div className="text-h4 text-white-tertiary mb-2">Observer Mode</div>
+              <p className="text-body-sm text-white-secondary">
+                You are not an active participant in this voting round.
+              </p>
+            </div>
+          </section>
+        )}
 
-            {hasVotedInStage && !userParticipant?.defaultVote && (
-              <div className="flex items-center justify-center gap-2 text-status-danger">
-                <CheckCircle className="w-5 h-5" />
-                <span>You voted Stop</span>
+        {/* Participants */}
+        <section>
+          <div className="label mb-4">Active Participants ({activeParticipants?.length || 0})</div>
+          <div className="panel p-4">
+            <div className="flex flex-wrap gap-2">
+              {activeParticipants?.map((addr) => {
+                const isUser = addr.toLowerCase() === address?.toLowerCase()
+                const truncated = `${addr.slice(0, 6)}...${addr.slice(-4)}`
+                
+                return (
+                  <div
+                    key={addr}
+                    className={`px-3 py-1.5 font-mono text-mono-sm ${
+                      isUser 
+                        ? 'bg-gold-muted text-gold border border-gold/30' 
+                        : 'bg-white-ghost text-white-secondary'
+                    }`}
+                  >
+                    {isUser ? '● ' : ''}{truncated}
+                  </div>
+                )
+              })}
+            </div>
+
+            {!userIsActiveParticipant && (
+              <div className="mt-4 pt-4 border-t border-white-ghost text-body-sm text-white-tertiary">
+                You are not an active participant in this voting round.
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        {/* Active Participants */}
-        <div className="card">
-          <div className="flex items-center gap-3 mb-4">
-            <Users className="w-5 h-5 text-accent-primary" />
-            <h3 className="text-heading-3 text-text-primary">
-              Active Participants ({activeParticipants?.length || 0})
-            </h3>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {activeParticipants?.map((addr) => {
-              const isUser = addr.toLowerCase() === address?.toLowerCase()
-              const truncated = `${addr.slice(0, 6)}...${addr.slice(-4)}`
-              
-              return (
-                <div
-                  key={addr}
-                  className={`px-3 py-1.5 rounded-full text-body-sm font-mono ${
-                    isUser 
-                      ? 'bg-accent-primary-muted text-accent-primary border border-accent-primary/30' 
-                      : 'bg-bg-hover text-text-secondary'
-                  }`}
-                >
-                  {isUser ? '★ ' : ''}{truncated}
-                </div>
-              )
-            })}
-          </div>
-
-          {!userIsActiveParticipant && (
-            <div className="mt-4 p-3 rounded-lg bg-bg-hover text-body-sm text-text-secondary">
-              You are not an active participant in this voting round.
-            </div>
-          )}
-        </div>
       </div>
     </NavbarLayout>
   )

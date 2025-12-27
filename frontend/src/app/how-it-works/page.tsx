@@ -1,205 +1,173 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { NavbarLayout } from '@/components/layout/NavbarLayout'
 import Link from 'next/link'
-import {
-  Coins,
-  Shuffle,
-  Users,
-  Trophy,
-  ArrowRight,
-  CheckCircle,
-  Clock,
-  Shield,
-  Zap,
-} from 'lucide-react'
 
 export default function HowItWorksPage() {
-  const t = useTranslations()
-
-  const steps = [
-    {
-      number: 1,
-      icon: Coins,
-      title: t('howItWorks.step1.title'),
-      description: t('howItWorks.step1.description'),
-      details: [
-        t('howItWorks.step1.detail1'),
-        t('howItWorks.step1.detail2'),
-        t('howItWorks.step1.detail3'),
-        t('howItWorks.step1.detail4'),
-      ],
-      color: 'amber',
-    },
-    {
-      number: 2,
-      icon: Shuffle,
-      title: t('howItWorks.step2.title'),
-      description: t('howItWorks.step2.description'),
-      details: [
-        t('howItWorks.step2.detail1'),
-        t('howItWorks.step2.detail2'),
-        t('howItWorks.step2.detail3'),
-        t('howItWorks.step2.detail4'),
-      ],
-      color: 'purple',
-    },
-    {
-      number: 3,
-      icon: Users,
-      title: t('howItWorks.step3.title'),
-      description: t('howItWorks.step3.description'),
-      details: [
-        t('howItWorks.step3.detail1'),
-        t('howItWorks.step3.detail2'),
-        t('howItWorks.step3.detail3'),
-        t('howItWorks.step3.detail4'),
-      ],
-      color: 'blue',
-    },
-    {
-      number: 4,
-      icon: Trophy,
-      title: t('howItWorks.step4.title'),
-      description: t('howItWorks.step4.description'),
-      details: [
-        t('howItWorks.step4.detail1'),
-        t('howItWorks.step4.detail2'),
-        t('howItWorks.step4.detail3'),
-        t('howItWorks.step4.detail4'),
-      ],
-      color: 'green',
-    },
-  ]
-
-  const features = [
-    {
-      icon: Shield,
-      title: t('howItWorks.features.decentralized.title'),
-      description: t('howItWorks.features.decentralized.description'),
-    },
-    {
-      icon: Zap,
-      title: t('howItWorks.features.vrf.title'),
-      description: t('howItWorks.features.vrf.description'),
-    },
-    {
-      icon: Clock,
-      title: t('howItWorks.features.voting.title'),
-      description: t('howItWorks.features.voting.description'),
-    },
-    {
-      icon: CheckCircle,
-      title: t('howItWorks.features.transparent.title'),
-      description: t('howItWorks.features.transparent.description'),
-    },
-  ]
-
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12">
-      {/* Header */}
-      <div className="text-center mb-8 md:mb-16">
-        <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
-          {t('howItWorks.title')}
-        </h1>
-        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
-          {t('howItWorks.subtitle')}
-        </p>
-      </div>
+    <NavbarLayout>
+      <div className="max-w-[800px] mx-auto">
+        
+        {/* Header */}
+        <header className="mb-12 pt-8">
+          <h1 className="text-h1 text-white-primary mb-3">Game Rules</h1>
+          <p className="text-body text-white-secondary">
+            Understand the mechanics before you participate.
+          </p>
+        </header>
 
-      {/* Steps */}
-      <div className="max-w-4xl mx-auto space-y-6 mb-12 md:mb-16">
-        {steps.map((step, index) => (
-          <Card key={index} className="glass-card overflow-hidden">
-            <div className="flex flex-col md:flex-row">
-              {/* Step Number */}
-              <div className="p-6 md:p-8 flex items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 md:w-40">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg">
-                  <span className="text-2xl md:text-3xl font-bold text-white">{step.number}</span>
-                </div>
+        {/* Overview */}
+        <section className="mb-12">
+          <div className="panel p-6 mb-6">
+            <div className="label label-gold mb-4">Summary</div>
+            <p className="text-body text-white-secondary leading-relaxed">
+              Participation is a prize pool game. Players buy shares, 8 are randomly selected, 
+              and through voting rounds the field narrows until one winner takes the pool.
+            </p>
+          </div>
+        </section>
+
+        {/* Phase 1: Buying */}
+        <section className="mb-10">
+          <div className="flex items-baseline gap-4 mb-4">
+            <span className="text-gold font-mono text-caption">01</span>
+            <h2 className="text-h2 text-white-primary">Buying Phase</h2>
+          </div>
+          <div className="border-l border-white-ghost pl-6 ml-2">
+            <ul className="space-y-3 text-body text-white-secondary">
+              <li>Each share costs <span className="text-white-primary font-mono">1 LUSD</span></li>
+              <li>Buy any number of shares — no limit per wallet</li>
+              <li>90% goes to prize pool, 10% platform fee</li>
+              <li>Buying closes when the token cap is reached</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Phase 2: Selection */}
+        <section className="mb-10">
+          <div className="flex items-baseline gap-4 mb-4">
+            <span className="text-gold font-mono text-caption">02</span>
+            <h2 className="text-h2 text-white-primary">Random Selection</h2>
+          </div>
+          <div className="border-l border-white-ghost pl-6 ml-2">
+            <ul className="space-y-3 text-body text-white-secondary">
+              <li>Chainlink VRF generates verifiable random numbers</li>
+              <li><span className="text-white-primary">8 participants</span> are selected</li>
+              <li>Selection is weighted by share count — more shares = higher chance</li>
+              <li>All randomness is on-chain and auditable</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Phase 3: Voting - CRITICAL SECTION */}
+        <section className="mb-10">
+          <div className="flex items-baseline gap-4 mb-4">
+            <span className="text-gold font-mono text-caption">03</span>
+            <h2 className="text-h2 text-white-primary">Voting Rounds</h2>
+          </div>
+          <div className="border-l border-gold/50 pl-6 ml-2">
+            <div className="panel-gold p-5 mb-4">
+              <div className="label label-gold mb-2">Important</div>
+              <p className="text-body-sm text-white-secondary">
+                Only the 8 selected participants can vote. Voting determines whether to continue 
+                eliminating or stop and pick a winner immediately.
+              </p>
+            </div>
+            
+            <div className="space-y-6">
+              <div>
+                <div className="text-h4 text-white-primary mb-2">Round 1: 8 → 4</div>
+                <p className="text-body-sm text-white-secondary">
+                  If majority votes <span className="text-gold">Continue</span>: 4 are randomly eliminated, 4 remain.
+                  <br />
+                  If majority votes <span className="text-white-primary">Stop</span>: Winner selected from current 8.
+                </p>
               </div>
-
-              {/* Content */}
-              <CardContent className="flex-1 p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-3">
-                  <step.icon className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
-                  <h3 className="text-xl md:text-2xl font-bold text-white">{step.title}</h3>
-                </div>
-                <p className="text-slate-400 mb-4 text-sm md:text-base">{step.description}</p>
-                <ul className="space-y-2">
-                  {step.details.map((detail, i) => (
-                    <li key={i} className="flex items-start gap-2 text-slate-300 text-sm md:text-base">
-                      <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      {detail}
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      {/* Features Grid */}
-      <div className="max-w-4xl mx-auto mb-12 md:mb-16">
-        <h2 className="text-xl md:text-2xl font-bold text-center text-white mb-6 md:mb-8">
-          {t('howItWorks.featuresTitle')}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {features.map((feature, index) => (
-            <Card key={index} className="glass-card p-4 md:p-6">
-              <div className="flex items-start gap-4">
-                <div className="p-2 md:p-3 rounded-lg bg-amber-500/10 flex-shrink-0">
-                  <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white mb-1 text-sm md:text-base">{feature.title}</h3>
-                  <p className="text-slate-400 text-xs md:text-sm">{feature.description}</p>
-                </div>
+              
+              <div>
+                <div className="text-h4 text-white-primary mb-2">Round 2: 4 → 2</div>
+                <p className="text-body-sm text-white-secondary">
+                  If majority votes <span className="text-gold">Continue</span>: 2 are randomly eliminated, 2 remain.
+                  <br />
+                  If majority votes <span className="text-white-primary">Stop</span>: Winner selected from current 4.
+                </p>
               </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* Prize Distribution */}
-      <div className="max-w-4xl mx-auto mb-12 md:mb-16">
-        <Card className="glass-card p-6 md:p-8">
-          <h2 className="text-xl md:text-2xl font-bold text-center text-white mb-6 md:mb-8">
-            {t('howItWorks.prizeDistribution')}
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-center">
-            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
-              <div className="text-2xl md:text-3xl font-bold text-red-500 mb-1">10%</div>
-              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.platformFee')}</p>
+              
+              <div>
+                <div className="text-h4 text-white-primary mb-2">Round 3: 2 → 1</div>
+                <p className="text-body-sm text-white-secondary">
+                  Final round. One of the two remaining is randomly selected as winner.
+                </p>
+              </div>
             </div>
-            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
-              <div className="text-2xl md:text-3xl font-bold text-amber-500 mb-1">90%</div>
-              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.prizePool')}</p>
-            </div>
-            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
-              <div className="text-2xl md:text-3xl font-bold text-green-500 mb-1">85%</div>
-              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.finalWinner')}</p>
-            </div>
-            <div className="p-3 md:p-4 rounded-xl bg-slate-700/30">
-              <div className="text-2xl md:text-3xl font-bold text-blue-500 mb-1">5%</div>
-              <p className="text-slate-400 text-xs md:text-sm">{t('howItWorks.consolation')}</p>
+            
+            <div className="mt-6 p-4 bg-white-ghost/50">
+              <div className="text-caption text-white-tertiary mb-2">VOTE TIMEOUT</div>
+              <p className="text-body-sm text-white-secondary">
+                Each voting round has a time limit. If a participant doesn't vote, 
+                their default vote is <span className="text-gold">Continue</span>.
+              </p>
             </div>
           </div>
-        </Card>
-      </div>
+        </section>
 
-      {/* CTA */}
-      <div className="text-center">
-        <Link href="/">
-          <Button size="lg" className="w-full sm:w-auto">
-            {t('howItWorks.startPlaying')}
-            <ArrowRight className="h-5 w-5" />
-          </Button>
-        </Link>
+        {/* Phase 4: Prize */}
+        <section className="mb-10">
+          <div className="flex items-baseline gap-4 mb-4">
+            <span className="text-gold font-mono text-caption">04</span>
+            <h2 className="text-h2 text-white-primary">Prize Distribution</h2>
+          </div>
+          <div className="border-l border-white-ghost pl-6 ml-2">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="panel p-4">
+                <div className="label mb-1">Winner</div>
+                <div className="text-display-md value-display value-gold">85%</div>
+                <div className="text-caption text-white-tertiary mt-1">of prize pool</div>
+              </div>
+              <div className="panel p-4">
+                <div className="label mb-1">Consolation</div>
+                <div className="text-display-md value-display">5%</div>
+                <div className="text-caption text-white-tertiary mt-1">split among runners-up</div>
+              </div>
+            </div>
+            <p className="text-body-sm text-white-tertiary">
+              Remaining 10% was collected as platform fee during buying phase.
+            </p>
+          </div>
+        </section>
+
+        {/* Key Facts */}
+        <section className="mb-12">
+          <div className="divider-gold mb-8" />
+          <h2 className="text-h3 text-white-primary mb-6">Key Facts</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="panel p-4">
+              <div className="text-body-sm text-white-secondary mb-1">Randomness</div>
+              <div className="text-body text-white-primary">Chainlink VRF</div>
+            </div>
+            <div className="panel p-4">
+              <div className="text-body-sm text-white-secondary mb-1">Network</div>
+              <div className="text-body text-white-primary">Arbitrum Sepolia</div>
+            </div>
+            <div className="panel p-4">
+              <div className="text-body-sm text-white-secondary mb-1">Currency</div>
+              <div className="text-body text-white-primary">LUSD (Stablecoin)</div>
+            </div>
+            <div className="panel p-4">
+              <div className="text-body-sm text-white-secondary mb-1">Smart Contract</div>
+              <div className="text-body text-white-primary">Fully On-chain</div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
+        <section className="text-center pb-12">
+          <Link href="/" className="btn btn-gold btn-lg">
+            Enter Game
+          </Link>
+        </section>
+
       </div>
-    </div>
+    </NavbarLayout>
   )
 }

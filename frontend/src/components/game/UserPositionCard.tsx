@@ -1,17 +1,15 @@
 'use client'
 
-import { useContractData, useGameStatus } from '@/lib/hooks'
+import { useContractData } from '@/lib/hooks'
 import { useAccount } from 'wagmi'
 import { formatEther } from 'viem'
-import { User, Wallet, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { User, Wallet } from 'lucide-react'
 
 export function UserPositionCard() {
   const { isConnected } = useAccount()
   const { userShares, isParticipant, isActiveParticipant, lusdBalance } = useContractData()
-  const { isBuying } = useGameStatus()
 
-  const sharesFormatted = userShares.toString()
+  const sharesFormatted = Number(formatEther(userShares)).toLocaleString()
   const balanceFormatted = lusdBalance 
     ? Number(formatEther(lusdBalance)).toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -77,14 +75,6 @@ export function UserPositionCard() {
               You are an active participant in the current voting round!
             </p>
           </div>
-        )}
-
-        {/* CTA */}
-        {isBuying && (
-          <Link href="/buy" className="btn-primary w-full mt-2">
-            Buy More
-            <ArrowRight className="w-4 h-4" />
-          </Link>
         )}
       </div>
     </div>

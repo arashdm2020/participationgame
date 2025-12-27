@@ -3,45 +3,36 @@
 @tailwind utilities;
 
 /* ============================================
-   PARTICIPATION GAME - DESIGN SYSTEM v2.0
+   PARTICIPATION GAME - DESIGN SYSTEM v3.0
+   Strict 3-Color System: Black / Gold / White
    ============================================ */
 
 @layer base {
   :root {
-    /* Foundation Colors */
-    --bg-root: #07090C;
-    --bg-surface: #0D1117;
-    --bg-elevated: #161B22;
-    --bg-hover: #1C2128;
+    /* Core Colors */
+    --void: #000000;
+    --depth: #050505;
+    --base: #0A0A0A;
+    --surface: #111111;
+    --elevated: #181818;
+    --raised: #1F1F1F;
     
-    /* Border Colors */
-    --border-subtle: #21262D;
-    --border-default: #30363D;
+    /* Gold */
+    --gold: #C9A227;
+    --gold-bright: #E5B82A;
+    --gold-dim: #9A7B1E;
     
-    /* Text Colors */
-    --text-primary: #F0F6FC;
-    --text-secondary: #8B949E;
-    --text-tertiary: #484F58;
+    /* White */
+    --white: #FFFFFF;
+    --white-primary: #FAFAFA;
+    --white-secondary: #A0A0A0;
+    --white-tertiary: #606060;
+    --white-muted: #404040;
+    --white-ghost: #252525;
     
-    /* Accent Colors */
-    --accent-primary: #10B981;
-    --accent-primary-hover: #34D399;
-    
-    /* Status Colors */
-    --status-success: #10B981;
-    --status-warning: #F59E0B;
-    --status-danger: #EF4444;
-    --status-info: #3B82F6;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #10B981 0%, #059669 100%);
-    --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-    --gradient-danger: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-    
-    /* Sidebar */
-    --sidebar-width: 240px;
-    --sidebar-collapsed: 64px;
-    --header-height: 64px;
+    /* Layout */
+    --header-height: 56px;
+    --content-max: 1200px;
   }
 
   * {
@@ -52,188 +43,254 @@
 
   html {
     scroll-behavior: smooth;
+    background: var(--void);
   }
 
   body {
-    background-color: var(--bg-root);
-    color: var(--text-primary);
+    background: var(--base);
+    color: var(--white-primary);
     min-height: 100vh;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
   }
 
-  /* RTL Support - Persian */
-  [dir="rtl"] {
-    font-family: 'Vazirmatn', system-ui, sans-serif;
+  ::selection {
+    background: var(--gold);
+    color: var(--void);
   }
 }
 
 @layer components {
   /* ============================================
-     CARD COMPONENTS
+     SURFACE SYSTEM
      ============================================ */
   
-  .card {
-    @apply bg-bg-surface rounded-card p-5 shadow-card;
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--white-ghost);
   }
   
-  .card-elevated {
-    @apply bg-bg-elevated rounded-card p-5 shadow-card-hover;
+  .panel-elevated {
+    background: var(--elevated);
+    border: 1px solid var(--white-ghost);
   }
   
-  .card-highlighted {
-    @apply rounded-card p-5 border border-accent-primary/30;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
-  }
-  
-  .card-danger {
-    @apply rounded-card p-5 border border-status-danger/30;
-    background: rgba(239, 68, 68, 0.08);
+  .panel-gold {
+    background: var(--surface);
+    border: 1px solid var(--gold-dim);
+    box-shadow: 0 0 24px rgba(201, 162, 39, 0.08);
   }
 
   /* ============================================
-     BUTTON COMPONENTS
+     BUTTON SYSTEM
      ============================================ */
   
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150;
-    @apply focus:outline-none focus:ring-2 focus:ring-accent-primary/50;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 150ms ease;
+    cursor: pointer;
+    border: none;
+    outline: none;
   }
   
-  .btn-primary {
-    @apply btn px-5 py-3 text-white;
-    background: var(--gradient-primary);
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
   
-  .btn-primary:hover:not(:disabled) {
-    @apply brightness-110 -translate-y-0.5;
+  .btn-gold {
+    background: var(--gold);
+    color: var(--void);
+    padding: 12px 24px;
   }
   
-  .btn-secondary {
-    @apply btn px-5 py-3 bg-bg-elevated text-text-primary border border-border-subtle;
+  .btn-gold:hover:not(:disabled) {
+    background: var(--gold-bright);
   }
   
-  .btn-secondary:hover:not(:disabled) {
-    @apply bg-bg-hover border-border;
+  .btn-gold:active:not(:disabled) {
+    background: var(--gold-dim);
+  }
+  
+  .btn-outline {
+    background: transparent;
+    color: var(--white-primary);
+    border: 1px solid var(--white-muted);
+    padding: 11px 23px;
+  }
+  
+  .btn-outline:hover:not(:disabled) {
+    border-color: var(--white-secondary);
+    background: var(--white-ghost);
   }
   
   .btn-ghost {
-    @apply btn px-4 py-2 text-text-secondary;
+    background: transparent;
+    color: var(--white-secondary);
+    padding: 8px 16px;
   }
   
   .btn-ghost:hover:not(:disabled) {
-    @apply text-text-primary bg-bg-hover;
+    color: var(--white-primary);
+    background: var(--white-ghost);
   }
   
-  .btn-danger {
-    @apply btn px-5 py-3 text-white;
-    background: var(--gradient-danger);
-  }
-  
-  .btn-success {
-    @apply btn px-5 py-3 bg-status-success text-white;
-  }
-
   .btn-sm {
-    @apply px-3 py-2 text-body-sm;
+    padding: 8px 16px;
+    font-size: 13px;
   }
   
   .btn-lg {
-    @apply px-6 py-4 text-body-lg;
-  }
-  
-  .btn-xl {
-    @apply px-8 py-4 text-heading-3;
+    padding: 16px 32px;
+    font-size: 15px;
   }
 
   /* ============================================
-     BADGE COMPONENTS
-     ============================================ */
-  
-  .badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-body-sm font-medium;
-  }
-  
-  .badge-success {
-    @apply badge text-status-success;
-    background: rgba(16, 185, 129, 0.12);
-  }
-  
-  .badge-warning {
-    @apply badge text-status-warning;
-    background: rgba(245, 158, 11, 0.12);
-  }
-  
-  .badge-danger {
-    @apply badge text-status-danger;
-    background: rgba(239, 68, 68, 0.12);
-  }
-  
-  .badge-info {
-    @apply badge text-status-info;
-    background: rgba(59, 130, 246, 0.12);
-  }
-  
-  .badge-neutral {
-    @apply badge text-text-secondary bg-bg-hover;
-  }
-
-  /* ============================================
-     INPUT COMPONENTS
+     INPUT SYSTEM
      ============================================ */
   
   .input {
-    @apply w-full h-11 px-4 bg-bg-elevated border border-border-subtle rounded-lg;
-    @apply text-text-primary placeholder:text-text-tertiary;
-    @apply focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/30;
-    @apply transition-colors duration-150;
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    background: var(--elevated);
+    border: 1px solid var(--white-ghost);
+    border-radius: 4px;
+    color: var(--white-primary);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 150ms ease;
   }
   
-  .input-error {
-    @apply input border-status-danger focus:border-status-danger focus:ring-status-danger/30;
+  .input::placeholder {
+    color: var(--white-tertiary);
   }
   
-  .input-lg {
-    @apply h-14 px-5 text-heading-2 font-mono text-center;
+  .input:focus {
+    outline: none;
+    border-color: var(--gold-dim);
+  }
+  
+  .input-mono {
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 0.02em;
   }
 
   /* ============================================
-     PROGRESS COMPONENTS
+     INDICATOR SYSTEM
      ============================================ */
   
-  .progress-bar {
-    @apply relative h-2 bg-bg-hover rounded-full overflow-hidden;
+  .indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 2px;
+  }
+  
+  .indicator-gold {
+    background: rgba(201, 162, 39, 0.12);
+    color: var(--gold);
+  }
+  
+  .indicator-dim {
+    background: var(--white-ghost);
+    color: var(--white-secondary);
+  }
+  
+  .indicator-live {
+    background: rgba(201, 162, 39, 0.12);
+    color: var(--gold);
+  }
+  
+  .indicator-live::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+
+  /* ============================================
+     DATA DISPLAY
+     ============================================ */
+  
+  .value-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    color: var(--white-primary);
+  }
+  
+  .value-gold {
+    color: var(--gold);
+  }
+  
+  .label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--white-tertiary);
+  }
+  
+  .label-gold {
+    color: var(--gold-dim);
+  }
+
+  /* ============================================
+     PROGRESS BAR
+     ============================================ */
+  
+  .progress {
+    position: relative;
+    height: 4px;
+    background: var(--white-ghost);
+    border-radius: 0;
+    overflow: hidden;
   }
   
   .progress-fill {
-    @apply absolute inset-y-0 left-0 rounded-full transition-all duration-500 ease-out;
-    background: var(--gradient-primary);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: var(--gold);
+    transition: width 500ms ease-out;
   }
   
   .progress-shimmer {
-    @apply absolute inset-0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    animation: shimmer 2s infinite;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 2s linear infinite;
   }
 
   /* ============================================
-     NAVIGATION COMPONENTS
+     DIVIDER
      ============================================ */
   
-  .nav-item {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary;
-    @apply transition-colors duration-150 cursor-pointer;
+  .divider {
+    height: 1px;
+    background: var(--white-ghost);
+    border: none;
   }
   
-  .nav-item:hover {
-    @apply text-text-primary bg-bg-hover;
-  }
-  
-  .nav-item-active {
-    @apply nav-item text-text-primary bg-accent-primary-muted;
-    @apply border-l-2 border-accent-primary;
+  .divider-gold {
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
   }
 
   /* ============================================
@@ -241,61 +298,68 @@
      ============================================ */
   
   .skeleton {
-    @apply bg-bg-hover rounded animate-pulse;
+    background: var(--white-ghost);
+    border-radius: 2px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ============================================
+     TABLES
+     ============================================ */
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
   }
   
-  .skeleton-text {
-    @apply skeleton h-4 w-full;
+  .table th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--white-tertiary);
+    border-bottom: 1px solid var(--white-ghost);
   }
   
-  .skeleton-heading {
-    @apply skeleton h-8 w-3/4;
+  .table td {
+    padding: 16px;
+    font-size: 14px;
+    color: var(--white-secondary);
+    border-bottom: 1px solid var(--white-ghost);
   }
   
-  .skeleton-card {
-    @apply skeleton h-32 w-full rounded-card;
+  .table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .table tr:hover td {
+    background: var(--elevated);
   }
 }
 
 @layer utilities {
   /* ============================================
-     CUSTOM SCROLLBAR
+     SCROLLBAR
      ============================================ */
   
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--bg-surface);
+    background: var(--depth);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--border-default);
-    border-radius: 4px;
+    background: var(--white-muted);
+    border-radius: 0;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-tertiary);
-  }
-
-  /* ============================================
-     TEXT UTILITIES
-     ============================================ */
-  
-  .text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-gold {
-    background: var(--gradient-gold);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: var(--white-tertiary);
   }
 
   /* ============================================
@@ -313,110 +377,119 @@
   }
 
   /* ============================================
-     ANIMATIONS
+     FOCUS STATES
      ============================================ */
   
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+  .focus-gold:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--gold-dim);
   }
   
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  
-  .animate-pulse-dot {
-    animation: pulse-dot 1.5s ease-in-out infinite;
+  .focus-gold:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--gold);
   }
 
   /* ============================================
-     FOCUS VISIBLE
+     TEXT UTILITIES
      ============================================ */
   
-  .focus-ring {
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-root;
+  .text-gold {
+    color: var(--gold);
+  }
+  
+  .text-gold-bright {
+    color: var(--gold-bright);
+  }
+  
+  .text-gold-dim {
+    color: var(--gold-dim);
   }
 
   /* ============================================
-     LAYOUT UTILITIES
+     TRUNCATE
      ============================================ */
   
-  .sidebar-width {
-    width: var(--sidebar-width);
-  }
-  
-  .header-height {
-    height: var(--header-height);
-  }
-  
-  .main-content {
-    margin-left: var(--sidebar-width);
-    min-height: calc(100vh - var(--header-height));
-  }
-
-  /* ============================================
-     STATUS DOT
-     ============================================ */
-  
-  .status-dot {
-    @apply w-2 h-2 rounded-full;
-  }
-  
-  .status-dot-success {
-    @apply status-dot bg-status-success animate-pulse-dot;
-  }
-  
-  .status-dot-warning {
-    @apply status-dot bg-status-warning animate-pulse-dot;
-  }
-  
-  .status-dot-danger {
-    @apply status-dot bg-status-danger animate-pulse-dot;
-  }
-
-  /* ============================================
-     ANIMATIONS
-     ============================================ */
-  
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-  }
-  
-  .animate-slide-up {
-    animation: slideUp 0.5s ease-out forwards;
-  }
-  
-  .animate-shimmer {
-    animation: shimmer 2s infinite;
+  .truncate-address {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'JetBrains Mono', monospace;
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 @keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.2; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(8px); 
   }
-  100% {
-    transform: translateX(100%);
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
   }
+}
+
+@keyframes scale-in {
+  from { 
+    opacity: 0; 
+    transform: scale(0.96); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes tick {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* ============================================
+   ANIMATION UTILITIES
+   ============================================ */
+
+.animate-fade-in {
+  animation: fade-in 300ms ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 400ms ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 200ms ease-out forwards;
+}
+
+.animate-tick {
+  animation: tick 1s ease-in-out infinite;
+}
+
+.animate-pulse-gold {
+  animation: pulse-dot 2s ease-in-out infinite;
 }
